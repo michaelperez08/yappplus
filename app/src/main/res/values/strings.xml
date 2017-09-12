@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Yapp+</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="anunciate">Anúnciate</string>
+    <string name="search_hint"><font size="10">Código de compra y número de tiquete</font></string>
+    <string name="search_label">Yapp</string>
+</resources>

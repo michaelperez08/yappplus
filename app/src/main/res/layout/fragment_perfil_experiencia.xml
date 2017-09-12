@@ -1,0 +1,618 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context="com.yapp.mrrabbit.yapp.PerfilExperiencia"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="60dp"         android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        app:srcCompat="@mipmap/ic_evento"
+        android:padding="1dp"
+        android:background="@drawable/image_border"
+        android:layout_marginTop="16dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="20dp" />
+
+    <TextView
+        android:id="@+id/tv_evento_fprefil"
+        android:layout_width="265dp"
+        android:layout_height="31dp"
+        android:text="Nombre del Evento"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textAlignment="center"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_likes_visitas"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="16dp"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/imageView2" />
+
+    <TextView
+        android:id="@+id/tv_likes_visitas"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="36000"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView8"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintLeft_toRightOf="@+id/textView9"
+        app:layout_constraintRight_toLeftOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="likes"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toRightOf="@+id/tv_likes_visitas"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="57dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="|"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toRightOf="@+id/textView10"
+        app:layout_constraintTop_toTopOf="@+id/tv_likes_visitas"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_likes_visitas"
+        app:layout_constraintRight_toLeftOf="@+id/tv_likes_visitas" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="|"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toRightOf="@+id/textView12"
+        app:layout_constraintTop_toTopOf="@+id/textView7"
+        app:layout_constraintBottom_toBottomOf="@+id/textView7"
+        app:layout_constraintRight_toLeftOf="@+id/textView7" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="clics"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toRightOf="@+id/textView7"
+        app:layout_constraintTop_toTopOf="@+id/textView9"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        app:layout_constraintRight_toLeftOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="visitas"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textView13"
+        app:layout_constraintTop_toTopOf="@+id/textView13"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintLeft_toRightOf="@+id/textView11"
+        app:layout_constraintRight_toLeftOf="@+id/textView13" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="15000"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@+id/textView13"
+        app:layout_constraintTop_toTopOf="@+id/textView10"
+        app:layout_constraintBottom_toBottomOf="@+id/textView10"
+        app:layout_constraintRight_toLeftOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:text="12500"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@+id/textView12"
+        app:layout_constraintBottom_toBottomOf="@+id/textView12"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintRight_toLeftOf="@+id/textView12"
+        app:layout_constraintLeft_toRightOf="@+id/imageView2" />
+
+    <ImageView
+        android:id="@+id/im_dollar_perfil"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/im_ticket_perfil"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_dollar_semana"
+        app:layout_constraintTop_toTopOf="@+id/im_ticket_perfil"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@mipmap/ic_dollar"
+        tools:ignore="VectorDrawableCompat"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
+
+    <ImageView
+        android:id="@+id/im_ticket_perfil"
+        android:layout_width="36dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintHorizontal_bias="0.651"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/im_dollar_perfil"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_ticket"
+        tools:ignore="VectorDrawableCompat"
+        tools:layout_constraintTop_creator="1" />
+
+    <TextView
+        android:id="@+id/tv_tickets_total"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="90"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.498"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_tickets_mes"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_mes" />
+
+    <TextView
+        android:id="@+id/tv_tickets_mes"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="50"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_tickets_semana"
+        android:layout_marginTop="17dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tickets_semana"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_semana" />
+
+    <TextView
+        android:id="@+id/tv_tickets_semana"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="30"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_tickets_hoy"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tickets_hoy"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_hoy" />
+
+    <TextView
+        android:id="@+id/tv_tickets_hoy"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:text="10"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/im_ticket_perfil"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/im_ticket_perfil" />
+
+    <TextView
+        android:id="@+id/tv_dollar_total"
+        android:layout_width="60dp"
+        android:layout_height="17dp"
+        android:layout_marginEnd="21dp"
+        android:text="$12000"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginRight="21dp"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintBottom_creator="1" />
+
+    <TextView
+        android:id="@+id/tv_dollar_mes"
+        android:layout_width="0dp"
+        android:layout_height="17dp"
+        android:text="$60"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_dollar_semana"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_semana"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_dollar_semana" />
+
+    <TextView
+        android:id="@+id/tv_dollar_semana"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:text="$40"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/tv_dollar_total"
+        app:layout_constraintRight_toRightOf="@+id/view2"
+        android:layout_marginTop="54dp"
+        app:layout_constraintTop_toBottomOf="@+id/im_dollar_perfil"
+        android:layout_marginBottom="54dp"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tv_dollar_hoy"
+        android:layout_width="60dp"
+        android:layout_height="17dp"
+        android:layout_marginBottom="41dp"
+        android:layout_marginTop="42dp"
+        android:text="$20"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_dollar_semana"
+        app:layout_constraintLeft_toLeftOf="@+id/im_dollar_perfil"
+        app:layout_constraintTop_toTopOf="@+id/im_dollar_perfil"
+        app:layout_constraintVertical_bias="0.142"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/im_dollar_perfil"
+        app:layout_constraintHorizontal_bias="0.88"
+        tools:layout_constraintRight_creator="1" />
+
+    <TextView
+        android:id="@+id/tv_total"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="Total"
+        android:textStyle="bold"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_mes"
+        android:layout_marginTop="22dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_mes"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_mes" />
+
+    <TextView
+        android:id="@+id/tv_mes"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="Mes"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_semana"
+        android:layout_marginTop="17dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_semana"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_semana" />
+
+    <TextView
+        android:id="@+id/tv_semana"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:text="Semana"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/tv_hoy"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_hoy"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_hoy" />
+
+    <TextView
+        android:id="@+id/tv_hoy"
+        android:layout_width="63dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:text="Hoy"
+        app:layout_constraintRight_toLeftOf="@+id/tv_evento_fprefil"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/view9"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="124dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="124dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView2"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:background="#D3D3D3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/view9"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_total"
+        tools:layout_constraintLeft_creator="1" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#D3D3D3"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="21dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_total"
+        android:layout_marginEnd="21dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="25dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_dollar_mes"
+        android:layout_marginLeft="21dp"
+        android:layout_marginRight="21dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#D3D3D3"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="21dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_mes"
+        android:layout_marginEnd="21dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="27dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_dollar_semana"
+        android:layout_marginLeft="21dp"
+        android:layout_marginRight="21dp" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#D3D3D3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/tv_mes"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginTop="46dp"
+        app:layout_constraintTop_toBottomOf="@+id/im_dollar_perfil"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="45dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginRight="21dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="72dp"
+        android:layout_height="33dp"
+        android:text="Campaña Publicitaria"
+        android:textSize="12dp"
+        android:textAlignment="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintLeft_toLeftOf="@+id/ib_campana_publicitaria"
+        android:layout_marginRight="19dp"
+        app:layout_constraintRight_toRightOf="@+id/ib_campana_publicitaria"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintTop_toTopOf="@+id/ib_campana_publicitaria"
+        android:layout_marginTop="40dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="74dp"
+        android:layout_height="33dp"
+        android:textSize="12dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginStart="20dp"
+        android:text="Referidos e Influencers"
+        android:textAlignment="center"
+        android:layout_marginRight="19dp"
+        app:layout_constraintRight_toRightOf="@+id/ib_referidos_influencers"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintLeft_toLeftOf="@+id/ib_referidos_influencers"
+        app:layout_constraintTop_toTopOf="@+id/ib_referidos_influencers"
+        android:layout_marginTop="40dp"
+        app:layout_constraintHorizontal_bias="0.465" />
+
+    <ImageButton
+        android:id="@+id/ib_campana_publicitaria"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:src="@mipmap/ic_speaker"
+        app:layout_constraintRight_toLeftOf="@+id/ib_referidos_influencers"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="299dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="70dp"
+        android:layout_height="33dp"
+        android:text="Reporte Financiero"
+        android:textSize="12dp"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/ib_reporte_financiero"
+        app:layout_constraintRight_toRightOf="@+id/ib_reporte_financiero"
+        android:layout_marginStart="8dp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reporte"
+        android:textSize="12dp"
+        android:textAlignment="center"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/ib_reporte"
+        app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/ib_reporte"
+        android:layout_marginTop="83dp"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:text="Pausar Venta"
+        android:textSize="12dp"
+        android:textAlignment="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="422dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/ib_pausar_venta"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="@+id/ib_pausar_venta"
+        app:layout_constraintHorizontal_bias="0.49" />
+
+    <ImageButton
+        android:id="@+id/ib_referidos_influencers"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:src="@mipmap/ic_gruop_users"
+        app:layout_constraintRight_toLeftOf="@+id/ib_reporte_financiero"
+        app:layout_constraintLeft_toRightOf="@+id/ib_campana_publicitaria"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="299dp" />
+
+    <ImageButton
+        android:id="@+id/ib_reporte_financiero"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:src="@mipmap/ic_money_box"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/ib_referidos_influencers"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="299dp" />
+
+    <ImageButton
+        android:id="@+id/ib_reporte"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:src="@mipmap/ic_report_card"
+        app:layout_constraintRight_toLeftOf="@+id/ib_pausar_venta"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="381dp" />
+
+    <ImageButton
+        android:id="@+id/ib_pausar_venta"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:src="@mipmap/ic_pause"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/ib_reporte"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="381dp" />
+
+    <Button
+        android:id="@+id/fpe_bt_escanear"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Escanear"
+        android:background="@color/colorAccent"
+        android:textColor="#ffffff"
+        android:textSize="15dp"
+        android:gravity="center"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="447dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline"
+        app:layout_constraintGuide_begin="20dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="20dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline2"
+        app:layout_constraintGuide_begin="20dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="20dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline3"
+        app:layout_constraintGuide_begin="20dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="20dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline4"
+        app:layout_constraintGuide_begin="20dp"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="20dp"
+        tools:layout_editor_absoluteX="0dp" />
+
+
+</android.support.constraint.ConstraintLayout>
