@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity
 
         setTitle("");
 
-        //searchView = (MaterialSearchView) findViewById(R.id.search_view);
 
     }
 

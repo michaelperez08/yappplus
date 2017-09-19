@@ -57,16 +57,17 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"/>
 
-    <TextView
-        android:id="@+id/tv_disponibles_te_1"
+    <EditText
+        android:id="@+id/et_disponibles_te_1"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/radius_border"
         android:gravity="center"
-        android:text="98"
+        android:text="0"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:textSize="20dp"
+        android:inputType="number"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_pv_tipo_entrada_1"
         app:layout_constraintRight_toLeftOf="@+id/tv_entradas_agotadas_te_1"
@@ -80,9 +81,9 @@
         android:text="Disponibles"
         android:textSize="12dp"
         android:textColor="#cfcfcf"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_disponibles_te_1"
-        app:layout_constraintRight_toRightOf="@+id/tv_disponibles_te_1"
-        app:layout_constraintTop_toBottomOf="@+id/tv_disponibles_te_1"/>
+        app:layout_constraintLeft_toLeftOf="@+id/et_disponibles_te_1"
+        app:layout_constraintRight_toRightOf="@+id/et_disponibles_te_1"
+        app:layout_constraintTop_toBottomOf="@+id/et_disponibles_te_1"/>
 
     <TextView
         android:id="@+id/tv_entradas_agotadas_te_1"
@@ -93,9 +94,9 @@
         android:gravity="center"
         android:textColor="@android:color/black"
         android:background="@drawable/black_border"
-        app:layout_constraintTop_toTopOf="@+id/tv_disponibles_te_1"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_disponibles_te_1"
-        app:layout_constraintLeft_toRightOf="@+id/tv_disponibles_te_1"
+        app:layout_constraintTop_toTopOf="@+id/et_disponibles_te_1"
+        app:layout_constraintBottom_toBottomOf="@+id/et_disponibles_te_1"
+        app:layout_constraintLeft_toRightOf="@+id/et_disponibles_te_1"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <TextView
@@ -133,13 +134,14 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"/>
 
-    <TextView
-        android:id="@+id/tv_disponibles_te_2"
+    <EditText
+        android:id="@+id/et_disponibles_te_2"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/radius_border"
         android:gravity="center"
-        android:text="8"
+        android:text="0"
+        android:inputType="number"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:textSize="20dp"
@@ -156,9 +158,9 @@
         android:text="Disponibles"
         android:textSize="12dp"
         android:textColor="#cfcfcf"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_disponibles_te_2"
-        app:layout_constraintRight_toRightOf="@+id/tv_disponibles_te_2"
-        app:layout_constraintTop_toBottomOf="@+id/tv_disponibles_te_2"/>
+        app:layout_constraintLeft_toLeftOf="@+id/et_disponibles_te_2"
+        app:layout_constraintRight_toRightOf="@+id/et_disponibles_te_2"
+        app:layout_constraintTop_toBottomOf="@+id/et_disponibles_te_2"/>
 
     <TextView
         android:id="@+id/tv_entradas_agotadas_te_2"
@@ -169,9 +171,9 @@
         android:gravity="center"
         android:textColor="@android:color/black"
         android:background="@drawable/black_border"
-        app:layout_constraintTop_toTopOf="@+id/tv_disponibles_te_2"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_disponibles_te_2"
-        app:layout_constraintLeft_toRightOf="@+id/tv_disponibles_te_2"
+        app:layout_constraintTop_toTopOf="@+id/et_disponibles_te_2"
+        app:layout_constraintBottom_toBottomOf="@+id/et_disponibles_te_2"
+        app:layout_constraintLeft_toRightOf="@+id/et_disponibles_te_2"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <TextView
@@ -197,20 +199,20 @@
         app:layout_constraintHorizontal_bias="1.0" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/bt_guardar_pausar_venta"
         android:layout_width="0dp"
         android:layout_height="35dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/radius_button_pink"
         android:text="Guardar Cambios"
         android:textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@+id/view9"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="100dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/view9" />
 
 
 

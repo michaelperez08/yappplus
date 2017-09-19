@@ -239,13 +239,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$13178"
+        android:textColor="@color/colorAccent"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/tv_recibiras"
         app:layout_constraintTop_toTopOf="@+id/tv_recibiras"
         app:layout_constraintRight_toRightOf="@+id/tv_dinero_comision" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/bt_solcitar_adelanto"
         android:layout_width="250dp"
         android:layout_height="35dp"
         android:layout_marginBottom="10dp"

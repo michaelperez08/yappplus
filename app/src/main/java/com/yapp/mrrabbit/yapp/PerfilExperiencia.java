@@ -1,22 +1,25 @@
 package com.yapp.mrrabbit.yapp;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,10 +42,22 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private ImageButton ibt_influencers;
     private ImageButton ibt_reporte;
     private ImageButton ibt_pausar_venta;
+    private ImageButton ibt_estadisticas;
     private TextView tv_cerrarDialog;
+    private TextView tv_pausarVenta;
     private Button bt_accion_dialog;
     private AlertDialog dialog;
     private View dialogView;
+    private boolean excel_enviado;
+
+    private EditText etEntrada1;
+    private EditText etEntrada2;
+
+    private boolean ventaPausada;
+
+    private ProgressDialog nDialog;
+
+    private int disponibles_entrada1, disponibles_entrada2;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -109,18 +124,31 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 ((MainActivity)getActivity()).getAmiBuscar().setVisible(true);
                 break;
             case R.id.ib_referidos_influencers:
+                desplegarSpinnerCargando();
                 abrirDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
+                añadirInfluencers(dialogView);
+                excel_enviado = false;
                 bt_accion_dialog.setOnClickListener(enviar_excel_influencers());
+                cerrarSpinnerCargando();
                 break;
             case R.id.ib_reporte_financiero:
-                abrirDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, 0);
+                abrirDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, R.id.bt_solcitar_adelanto);
+                bt_accion_dialog.setOnClickListener(solicitarAdelanto());
                 break;
             case R.id.ib_reporte:
-                abrirDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, 0);
+                abrirDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, R.id.bt_enviar_excel_reporte);
+                excel_enviado = false;
+                bt_accion_dialog.setOnClickListener(enviar_excel_reporte());
                 break;
             case R.id.ib_pausar_venta:
-                abrirDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, 0);
+                abrirDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
+                cargarElementosPausarVenta();
+                bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
                 break;
+            case R.id.ib_estadisticas:
+                abrirWebView("http://ux.yappdevelopers.com/analytics/");
+                break;
+
         }
 
     }
@@ -129,7 +157,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder((MainActivity)getActivity());
         dialogView = getActivity().getLayoutInflater().inflate(resource, null);
 
-        tv_cerrarDialog = (TextView) dialogView.findViewById(R.id.tv_cerrar_dialog_influencers);
+        tv_cerrarDialog = (TextView) dialogView.findViewById(tv_cerrar_dialog);
         tv_cerrarDialog.setOnClickListener(cerrarDialogo());
 
         bt_accion_dialog = (Button) dialogView.findViewById(bt_dialog);
@@ -137,7 +165,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         mBuilder.setView(dialogView);
         dialog = mBuilder.create();
         dialog.show();
-        añadirInfluencers(dialogView);
     }
 
     public interface OnFragmentInteractionListener {
@@ -149,6 +176,9 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         cargarElemntosVisuales();
+        disponibles_entrada1 = 0;
+        disponibles_entrada2 = 0;
+        hayTiquetesDisponibles();
     }
 
     private void cargarElemntosVisuales() {
@@ -157,12 +187,15 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         ibt_influencers = (ImageButton) getActivity().findViewById(R.id.ib_referidos_influencers);
         ibt_reporte = (ImageButton) getActivity().findViewById(R.id.ib_reporte);
         ibt_pausar_venta = (ImageButton) getActivity().findViewById(R.id.ib_pausar_venta);
+        ibt_estadisticas = (ImageButton) getActivity().findViewById(R.id.ib_estadisticas);
+        tv_pausarVenta = (TextView) getActivity().findViewById(R.id.tv_pausarVenta);
 
         bt_escanear.setOnClickListener(this);
         ibt_reporteFinanciero.setOnClickListener(this);
         ibt_influencers.setOnClickListener(this);
         ibt_reporte.setOnClickListener(this);
         ibt_pausar_venta.setOnClickListener(this);
+        ibt_estadisticas.setOnClickListener(this);
     }
 
 
@@ -251,14 +284,85 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
         set.connect(R.id.bt_enviar_excel_influencers, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
         set.applyTo(layout);
+        nDialog.dismiss();
+    }
+
+    private void cargarElementosPausarVenta(){
+        etEntrada1 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_1);
+        etEntrada2 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_2);
+
+        etEntrada1.setText(String.valueOf(disponibles_entrada1));
+        etEntrada2.setText(String.valueOf(disponibles_entrada2));
+
+        etEntrada1.setSelection(etEntrada1.getText().length());
+        etEntrada2.setSelection(etEntrada2.getText().length());
+
+        etEntrada1.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
+        etEntrada2.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
+
+        etEntrada1.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        etEntrada2.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+    }
+
+    public void hayTiquetesDisponibles(){
+        if((disponibles_entrada1+disponibles_entrada2)>0){
+            ibt_pausar_venta.setImageResource(R.mipmap.ic_pause);
+            tv_pausarVenta.setText("Pausar Venta");
+        }else{
+            ibt_pausar_venta.setImageResource(R.mipmap.ic_play);
+            tv_pausarVenta.setText("Activar Venta");
+        }
     }
 
     private View.OnClickListener enviar_excel_influencers() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Enviado", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+                if(!excel_enviado){
+                    Toast.makeText(getActivity(), "Enviado", Toast.LENGTH_SHORT).show();
+                    bt_accion_dialog.setBackgroundResource(R.drawable.raduis_button_green);
+                    excel_enviado = true;
+                }
+            }
+        };
+    }
+
+    private View.OnClickListener enviar_excel_reporte() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!excel_enviado){
+                    Toast.makeText(getActivity(), "Enviado", Toast.LENGTH_SHORT).show();
+                    bt_accion_dialog.setBackgroundResource(R.drawable.raduis_button_green);
+                    excel_enviado = true;
+                }
+            }
+        };
+    }
+
+    private View.OnClickListener guardar_pausar_venta(final String mensaje) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(esNumero(etEntrada1.getText().toString()) && esNumero(etEntrada2.getText().toString())) {
+                    disponibles_entrada1 = Integer.valueOf(etEntrada1.getText().toString());
+                    disponibles_entrada2 = Integer.valueOf(etEntrada2.getText().toString());
+                    Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+                    hayTiquetesDisponibles();
+                    dialog.dismiss();
+                }else{
+                    Toast.makeText(getActivity(), "Solo se permiten numeros", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+    }
+
+    private View.OnClickListener solicitarAdelanto() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirWebView("http://yappexperience.com/adelantos");
             }
         };
     }
@@ -272,6 +376,35 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 }
             }
         };
+    }
+
+    public void abrirWebView(String url){
+        Intent intent = new Intent(getActivity(), WebViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("url",url);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void desplegarSpinnerCargando(){
+        nDialog = ProgressDialog.show(getActivity(), "dialog title",
+                "dialog message", true);
+    }
+
+    public  void cerrarSpinnerCargando(){
+        if(nDialog!=null){
+            nDialog.dismiss();
+        }
+    }
+
+    public boolean esNumero(String numero){
+        boolean esNumero = true;
+        try{
+            Integer.parseInt(numero);
+        }catch (NumberFormatException e){
+            esNumero = false;
+        }
+        return  esNumero;
     }
 
 }
