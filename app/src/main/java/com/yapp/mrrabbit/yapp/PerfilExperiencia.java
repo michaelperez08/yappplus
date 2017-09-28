@@ -45,6 +45,8 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private ImageButton ibt_estadisticas;
     private TextView tv_cerrarDialog;
     private TextView tv_pausarVenta;
+    private TextView tv_ticketes_hoy, tv_ticketes_semana, tv_ticketes_mes, tv_ticketes_total;
+    private TextView tv_dinero_hoy, tv_dinero_semana, tv_dinero_mes, tv_dinero_total;
     private Button bt_accion_dialog;
     private AlertDialog dialog;
     private View dialogView;
@@ -59,6 +61,8 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
     private int disponibles_entrada1, disponibles_entrada2;
 
+    private Evento eventoPerfil;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -67,6 +71,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
     public PerfilExperiencia() {
         // Required empty public constructor
+
     }
 
     /**
@@ -145,9 +150,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 cargarElementosPausarVenta();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
                 break;
-            case R.id.ib_estadisticas:
-                abrirWebView("http://ux.yappdevelopers.com/analytics/");
-                break;
 
         }
 
@@ -179,24 +181,49 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         disponibles_entrada1 = 0;
         disponibles_entrada2 = 0;
         hayTiquetesDisponibles();
+        if(eventoPerfil!=null){
+            cargarEventoPerfil();
+        }
+    }
+
+    public void cargarEventoPerfil(){
+        String modena = "$";
+        tv_ticketes_hoy.setText(String.valueOf(eventoPerfil.gettodaySales()));
+        tv_ticketes_semana.setText(String.valueOf(eventoPerfil.getweekSales()));
+        tv_ticketes_mes.setText(String.valueOf(eventoPerfil.getmonthSales()));
+        tv_ticketes_total.setText(String.valueOf(eventoPerfil.gettotalSales()));
+        tv_dinero_hoy.setText(modena+String.valueOf(eventoPerfil.gettodayMoney()));
+        tv_dinero_semana.setText(modena+String.valueOf(eventoPerfil.getweekMoney()));
+        tv_dinero_mes.setText(modena+String.valueOf(eventoPerfil.getmonthMoney()));
+        tv_dinero_total.setText(modena+String.valueOf(eventoPerfil.gettotalMoney()));
     }
 
     private void cargarElemntosVisuales() {
         bt_escanear = (Button) getActivity().findViewById(R.id.fpe_bt_escanear);
+
         ibt_reporteFinanciero = (ImageButton) getActivity().findViewById(R.id.ib_reporte_financiero);
         ibt_influencers = (ImageButton) getActivity().findViewById(R.id.ib_referidos_influencers);
         ibt_reporte = (ImageButton) getActivity().findViewById(R.id.ib_reporte);
         ibt_pausar_venta = (ImageButton) getActivity().findViewById(R.id.ib_pausar_venta);
-        ibt_estadisticas = (ImageButton) getActivity().findViewById(R.id.ib_estadisticas);
+
         tv_pausarVenta = (TextView) getActivity().findViewById(R.id.tv_pausarVenta);
+
+        tv_ticketes_hoy = (TextView) getActivity().findViewById(R.id.tv_tickets_hoy);
+        tv_ticketes_semana = (TextView) getActivity().findViewById(R.id.tv_tickets_semana);
+        tv_ticketes_mes = (TextView) getActivity().findViewById(R.id.tv_tickets_mes);
+        tv_ticketes_total = (TextView) getActivity().findViewById(R.id.tv_tickets_total);
+        tv_dinero_hoy = (TextView) getActivity().findViewById(R.id.tv_dollar_hoy);
+        tv_dinero_semana = (TextView) getActivity().findViewById(R.id.tv_dollar_semana);
+        tv_dinero_mes = (TextView) getActivity().findViewById(R.id.tv_dollar_mes);
+        tv_dinero_total = (TextView) getActivity().findViewById(R.id.tv_dollar_total);
 
         bt_escanear.setOnClickListener(this);
         ibt_reporteFinanciero.setOnClickListener(this);
         ibt_influencers.setOnClickListener(this);
         ibt_reporte.setOnClickListener(this);
         ibt_pausar_venta.setOnClickListener(this);
-        ibt_estadisticas.setOnClickListener(this);
     }
+
 
 
     public void añadirInfluencers(View dialog){
@@ -407,4 +434,11 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         return  esNumero;
     }
 
+    public Evento getEventoPerfil() {
+        return eventoPerfil;
+    }
+
+    public void setEventoPerfil(Evento eventoPerfil) {
+        this.eventoPerfil = eventoPerfil;
+    }
 }

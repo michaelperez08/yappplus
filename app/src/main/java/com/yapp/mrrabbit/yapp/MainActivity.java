@@ -1,7 +1,9 @@
 package com.yapp.mrrabbit.yapp;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,11 +14,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 
 public class MainActivity extends AppCompatActivity
@@ -30,6 +38,10 @@ public class MainActivity extends AppCompatActivity
 
     //private MaterialSearchView searchView;
     private SearchView searchView;
+    private ProgressDialog progress;
+    private ProgressBar pb;
+
+    public static Context appContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
         setTitle("");
 
-
+        appContext = getApplicationContext();
     }
 
 
@@ -136,7 +148,11 @@ public class MainActivity extends AppCompatActivity
         esconderItemsActionMenu();
 
         if (id == R.id.nav_perfil) {
+            DataAccess da = new DataAccess();
             fragment = new PerfilExperiencia();
+            displayDialogLoading();
+            ((PerfilExperiencia)fragment).setEventoPerfil(da.getInfoEventoSales(425960));
+            dismissLoading();
             amiMegaphone.setVisible(true);
             amiAnunciate.setVisible(true);
         } else if (id == R.id.nav_escaner_qr) {
@@ -158,6 +174,18 @@ public class MainActivity extends AppCompatActivity
         amiMegaphone.setVisible(false);
         amiAnunciate.setVisible(false);
         amiBuscar.setVisible(false);
+    }
+
+    public void displayDialogLoading(){
+        progress = new ProgressDialog(this);
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading...");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+    }
+
+    public void dismissLoading(){
+        progress.dismiss();
     }
 
     public MenuItem getAmiMegaphone() {
@@ -184,3 +212,4 @@ public class MainActivity extends AppCompatActivity
         this.amiBuscar = amiBuscar;
     }
 }
+
