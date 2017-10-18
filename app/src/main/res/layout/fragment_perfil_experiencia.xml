@@ -1,455 +1,465 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv_perfil_experiencia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    tools:context="com.yapp.mrrabbit.yapp.PerfilExperiencia"
-    tools:layout_editor_absoluteY="81dp"
-    tools:layout_editor_absoluteX="0dp">
+    android:fillViewport="true"
+    tools:context="com.yapp.mrrabbit.yapp.PerfilExperiencia">
 
-    <!-- TODO: Update blank fragment layout -->
-
-
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="60dp"         android:layout_height="60dp"
-        android:layout_marginStart="20dp"
-        app:srcCompat="@mipmap/ic_evento"
-        android:padding="1dp"
-        android:background="@drawable/image_border"
-        android:layout_marginTop="16dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="20dp" />
-
-    <TextView
-        android:id="@+id/tv_evento_fprefil"
-        android:layout_width="265dp"
-        android:layout_height="31dp"
-        android:text="Nombre del Evento"
-        android:textStyle="bold"
-        android:textSize="18dp"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toRightOf="@+id/imageView2"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-
-    <TextView
-        android:id="@+id/tv_likes_visitas"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="36000"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/textView8"
-        app:layout_constraintTop_toTopOf="@+id/textView8"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintLeft_toRightOf="@+id/textView9"
-        app:layout_constraintRight_toLeftOf="@+id/textView8" />
-
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="likes"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toRightOf="@+id/tv_likes_visitas"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="57dp"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="|"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toRightOf="@+id/textView10"
-        app:layout_constraintTop_toTopOf="@+id/tv_likes_visitas"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_likes_visitas"
-        app:layout_constraintRight_toLeftOf="@+id/tv_likes_visitas" />
-
-    <TextView
-        android:id="@+id/textView13"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="|"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toRightOf="@+id/textView12"
-        app:layout_constraintTop_toTopOf="@+id/textView7"
-        app:layout_constraintBottom_toBottomOf="@+id/textView7"
-        app:layout_constraintRight_toLeftOf="@+id/textView7" />
-
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="clics"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toRightOf="@+id/textView7"
-        app:layout_constraintTop_toTopOf="@+id/textView9"
-        app:layout_constraintBottom_toBottomOf="@+id/textView9"
-        app:layout_constraintRight_toLeftOf="@+id/textView9" />
-
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="visitas"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/textView13"
-        app:layout_constraintTop_toTopOf="@+id/textView13"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintLeft_toRightOf="@+id/textView11"
-        app:layout_constraintRight_toLeftOf="@+id/textView13" />
-
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="15000"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toRightOf="@+id/textView13"
-        app:layout_constraintTop_toTopOf="@+id/textView10"
-        app:layout_constraintBottom_toBottomOf="@+id/textView10"
-        app:layout_constraintRight_toLeftOf="@+id/textView10" />
-
-    <TextView
-        android:id="@+id/textView11"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:text="12500"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView12"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintRight_toLeftOf="@+id/textView12"
-        app:layout_constraintLeft_toRightOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/textView12" />
-
-    <ImageView
-        android:id="@+id/im_dollar_perfil"
-        android:layout_width="60dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/im_ticket_perfil"
-        app:layout_constraintTop_toTopOf="@+id/im_ticket_perfil"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@mipmap/ic_dollar"
-        android:layout_marginRight="20dp"
-        tools:ignore="VectorDrawableCompat"
-        android:layout_marginEnd="20dp" />
-
-    <ImageView
-        android:id="@+id/im_ticket_perfil"
-        android:layout_width="36dp"
-        android:layout_height="23dp"
-        app:layout_constraintHorizontal_bias="0.651"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/im_dollar_perfil"
-        app:srcCompat="@mipmap/ic_ticket"
-        tools:ignore="VectorDrawableCompat"
-        android:layout_marginTop="15dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <TextView
-        android:id="@+id/tv_tickets_total"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="90"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/tv_tickets_mes"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_mes"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tickets_mes"
-        android:layout_marginTop="20dp"/>
-
-    <TextView
-        android:id="@+id/tv_tickets_mes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="50"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/tv_tickets_semana"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tickets_semana"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_semana"
-        android:layout_marginTop="20dp"/>
-
-    <TextView
-        android:id="@+id/tv_tickets_semana"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="30"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/tv_tickets_hoy"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tickets_hoy"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_hoy"
-        android:layout_marginTop="20dp"/>
-
-    <TextView
-        android:id="@+id/tv_tickets_hoy"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:text="10"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/im_ticket_perfil"
-        app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil"
-        app:layout_constraintLeft_toLeftOf="@+id/im_ticket_perfil"
-        android:layout_marginTop="20dp"/>
-
-    <TextView
-        android:id="@+id/tv_dollar_total"
-        android:layout_width="60dp"
-        android:layout_height="17dp"
-        android:text="$12000"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_mes"
-        app:layout_constraintRight_toRightOf="@+id/tv_dollar_mes"
-        android:layout_marginTop="20dp"/>
-
-    <TextView
-        android:id="@+id/tv_dollar_mes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="$60"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/tv_dollar_semana"
-        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_semana"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_dollar_semana"
-        android:layout_marginTop="20dp" />
-
-    <TextView
-        android:id="@+id/tv_dollar_semana"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:text="$40"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/tv_dollar_hoy"
-        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_hoy"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp" />
-
-    <TextView
-        android:id="@+id/tv_dollar_hoy"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="$20"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toLeftOf="@+id/im_dollar_perfil"
-        app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil"
-        app:layout_constraintRight_toRightOf="@+id/im_dollar_perfil"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tv_total"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total"
-        android:textStyle="bold"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv_mes"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_mes" />
-
-    <TextView
-        android:id="@+id/tv_mes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mes"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv_semana"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_semana"/>
-
-    <TextView
-        android:id="@+id/tv_semana"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Semana"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv_hoy"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_hoy"
-        android:layout_marginLeft="1dp"
-        android:layout_marginStart="1dp" />
-
-    <TextView
-        android:id="@+id/tv_hoy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:text="Hoy"
-        app:layout_constraintRight_toLeftOf="@+id/tv_evento_fprefil"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil"
-        android:layout_marginEnd="20dp" />
-
-    <View
-        android:id="@+id/v_linea_separador"
-        android:layout_width="0dp"
-        android:layout_height="6dp"
-        android:background="#D3D3D3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_total"
-        tools:layout_constraintLeft_creator="1" />
-
-    <View
-        android:id="@+id/v_linea_mes"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="#D3D3D3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_mes"
-        android:layout_marginTop="4dp"/>
-
-    <View
-        android:id="@+id/v_linea_semana"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#D3D3D3"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_semana"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
-
-    <View
-        android:id="@+id/v_linea_hoy"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#D3D3D3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_hoy"
-        android:layout_marginTop="3dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="74dp"
-        android:layout_height="33dp"
-        android:textSize="12dp"
-        android:text="Referidos e Influencers"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/ib_referidos_influencers"
-        app:layout_constraintLeft_toLeftOf="@+id/ib_referidos_influencers"
-        app:layout_constraintTop_toBottomOf="@+id/ib_referidos_influencers" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="70dp"
-        android:layout_height="33dp"
-        android:text="Reporte Financiero"
-        android:textSize="12dp"
-        android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero"
-        app:layout_constraintLeft_toLeftOf="@+id/ib_reporte_financiero"
-        app:layout_constraintRight_toRightOf="@+id/ib_reporte_financiero" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reporte"
-        android:textSize="12dp"
-        android:textAlignment="center"
-        app:layout_constraintRight_toRightOf="@+id/ib_reporte"
-        app:layout_constraintLeft_toLeftOf="@id/ib_reporte"
-        app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero" />
-
-    <TextView
-        android:id="@+id/tv_pausarVenta"
-        android:layout_width="85dp"
-        android:layout_height="wrap_content"
-        android:text="Pausar Venta"
-        android:textAlignment="center"
-        android:textSize="12dp"
-        app:layout_constraintLeft_toLeftOf="@+id/ib_pausar_venta"
-        app:layout_constraintRight_toRightOf="@+id/ib_pausar_venta"
-        app:layout_constraintTop_toBottomOf="@+id/ib_pausar_venta" />
-
-    <ImageButton
-        android:id="@+id/ib_referidos_influencers"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="#ffffff"
-        android:src="@mipmap/ic_gruop_users"
-        app:layout_constraintRight_toLeftOf="@+id/ib_reporte_financiero"
-        app:layout_constraintTop_toTopOf="@+id/ib_reporte"
-        app:layout_constraintLeft_toRightOf="@id/ib_reporte" />
+        tools:context="com.yapp.mrrabbit.yapp.PerfilExperiencia">
 
-    <ImageButton
-        android:id="@+id/ib_reporte_financiero"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="#ffffff"
-        android:src="@mipmap/ic_money_box"
-        app:layout_constraintLeft_toRightOf="@+id/ib_referidos_influencers"
-        app:layout_constraintTop_toTopOf="@id/ib_referidos_influencers"
-        android:layout_marginTop="0dp"
-        app:layout_constraintRight_toLeftOf="@+id/ib_pausar_venta" />
-
-    <ImageButton
-        android:id="@+id/ib_reporte"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="#ffffff"
-        android:src="@mipmap/ic_report_card"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/ib_referidos_influencers"
-        app:layout_constraintTop_toBottomOf="@id/v_linea_separador"
-        android:layout_marginTop="20dp"/>
-
-    <ImageButton
-        android:id="@+id/ib_pausar_venta"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="#ffffff"
-        android:src="@mipmap/ic_pause"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/ib_reporte_financiero"
-        android:layout_marginRight="0dp"
-        app:layout_constraintTop_toTopOf="@+id/ib_reporte_financiero" />
-
-    <Button
-        android:id="@+id/fpe_bt_escanear"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="Escanear"
-        android:background="@color/colorAccent"
-        android:textColor="#ffffff"
-        android:textSize="15dp"
-        android:gravity="center"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ib_reporte"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="1.0" />
+        <!-- TODO: Update blank fragment layout -->
 
 
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/image_border"
+            android:padding="1dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/ic_evento"
+            tools:layout_constraintLeft_creator="1" />
+
+        <TextView
+            android:id="@+id/tv_evento_fprefil"
+            android:layout_width="265dp"
+            android:layout_height="31dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Nombre del Evento"
+            android:textAlignment="center"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toRightOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_likes_visitas"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="36000"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/textView8"
+            app:layout_constraintLeft_toRightOf="@+id/textView9"
+            app:layout_constraintRight_toLeftOf="@+id/textView8"
+            app:layout_constraintTop_toTopOf="@+id/textView8"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:layout_marginTop="57dp"
+            android:text="likes"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toRightOf="@+id/tv_likes_visitas"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="|"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_likes_visitas"
+            app:layout_constraintLeft_toRightOf="@+id/textView10"
+            app:layout_constraintRight_toLeftOf="@+id/tv_likes_visitas"
+            app:layout_constraintTop_toTopOf="@+id/tv_likes_visitas" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="|"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/textView7"
+            app:layout_constraintLeft_toRightOf="@+id/textView12"
+            app:layout_constraintRight_toLeftOf="@+id/textView7"
+            app:layout_constraintTop_toTopOf="@+id/textView7" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="clics"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/textView9"
+            app:layout_constraintLeft_toRightOf="@+id/textView7"
+            app:layout_constraintRight_toLeftOf="@+id/textView9"
+            app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="visitas"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/textView13"
+            app:layout_constraintLeft_toRightOf="@+id/textView11"
+            app:layout_constraintRight_toLeftOf="@+id/textView13"
+            app:layout_constraintTop_toTopOf="@+id/textView13"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="15000"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/textView10"
+            app:layout_constraintLeft_toRightOf="@+id/textView13"
+            app:layout_constraintRight_toLeftOf="@+id/textView10"
+            app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:text="12500"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/textView12"
+            app:layout_constraintLeft_toRightOf="@+id/imageView2"
+            app:layout_constraintRight_toLeftOf="@+id/textView12"
+            app:layout_constraintTop_toTopOf="@+id/textView12"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/im_dollar_perfil"
+            android:layout_width="60dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/im_ticket_perfil"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/im_ticket_perfil"
+            app:srcCompat="@mipmap/ic_dollar"
+            tools:ignore="VectorDrawableCompat" />
+
+        <ImageView
+            android:id="@+id/im_ticket_perfil"
+            android:layout_width="36dp"
+            android:layout_height="23dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintHorizontal_bias="0.651"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/im_dollar_perfil"
+            app:layout_constraintTop_toBottomOf="@+id/textView13"
+            app:srcCompat="@mipmap/ic_ticket"
+            tools:ignore="VectorDrawableCompat" />
+
+        <TextView
+            android:id="@+id/tv_tickets_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="90"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_mes"
+            app:layout_constraintRight_toRightOf="@+id/tv_tickets_mes"
+            app:layout_constraintTop_toBottomOf="@+id/tv_tickets_mes" />
+
+        <TextView
+            android:id="@+id/tv_tickets_mes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="50"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_semana"
+            app:layout_constraintRight_toRightOf="@+id/tv_tickets_semana"
+            app:layout_constraintTop_toBottomOf="@+id/tv_tickets_semana" />
+
+        <TextView
+            android:id="@+id/tv_tickets_semana"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="30"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_hoy"
+            app:layout_constraintRight_toRightOf="@+id/tv_tickets_hoy"
+            app:layout_constraintTop_toBottomOf="@+id/tv_tickets_hoy" />
+
+        <TextView
+            android:id="@+id/tv_tickets_hoy"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="10"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="@+id/im_ticket_perfil"
+            app:layout_constraintRight_toRightOf="@+id/im_ticket_perfil"
+            app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil" />
+
+        <TextView
+            android:id="@+id/tv_dollar_total"
+            android:layout_width="60dp"
+            android:layout_height="17dp"
+            android:layout_marginTop="20dp"
+            android:text="$12000"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintRight_toRightOf="@+id/tv_dollar_mes"
+            app:layout_constraintTop_toBottomOf="@+id/tv_dollar_mes" />
+
+        <TextView
+            android:id="@+id/tv_dollar_mes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="$60"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_dollar_semana"
+            app:layout_constraintRight_toRightOf="@+id/tv_dollar_semana"
+            app:layout_constraintTop_toBottomOf="@+id/tv_dollar_semana" />
+
+        <TextView
+            android:id="@+id/tv_dollar_semana"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="20dp"
+            android:text="$40"
+            android:textAlignment="center"
+            app:layout_constraintRight_toRightOf="@+id/tv_dollar_hoy"
+            app:layout_constraintTop_toBottomOf="@+id/tv_dollar_hoy" />
+
+        <TextView
+            android:id="@+id/tv_dollar_hoy"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="$20"
+            android:textAlignment="center"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/im_dollar_perfil"
+            app:layout_constraintRight_toRightOf="@+id/im_dollar_perfil"
+            app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Total"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_mes"
+            app:layout_constraintTop_toBottomOf="@+id/tv_mes" />
+
+        <TextView
+            android:id="@+id/tv_mes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Mes"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_semana"
+            app:layout_constraintTop_toBottomOf="@+id/tv_semana" />
+
+        <TextView
+            android:id="@+id/tv_semana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="20dp"
+            android:text="Semana"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_hoy"
+            app:layout_constraintTop_toBottomOf="@+id/tv_hoy" />
+
+        <TextView
+            android:id="@+id/tv_hoy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Hoy"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/tv_evento_fprefil"
+            app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil" />
+
+        <View
+            android:id="@+id/v_linea_separador"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="20dp"
+            android:background="#D3D3D3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_dollar_total"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1" />
+
+        <View
+            android:id="@+id/v_linea_mes"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="4dp"
+            android:background="#D3D3D3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_mes" />
+
+        <View
+            android:id="@+id/v_linea_semana"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="4dp"
+            android:background="#D3D3D3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_semana" />
+
+        <View
+            android:id="@+id/v_linea_hoy"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="3dp"
+            android:background="#D3D3D3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_hoy" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="74dp"
+            android:layout_height="33dp"
+            android:text="Referidos e Influencers"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            app:layout_constraintLeft_toLeftOf="@+id/ib_referidos_influencers"
+            app:layout_constraintRight_toRightOf="@+id/ib_referidos_influencers"
+            app:layout_constraintTop_toBottomOf="@+id/ib_referidos_influencers" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="70dp"
+            android:layout_height="33dp"
+            android:text="Reporte Financiero"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            app:layout_constraintLeft_toLeftOf="@+id/ib_reporte_financiero"
+            app:layout_constraintRight_toRightOf="@+id/ib_reporte_financiero"
+            app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reporte"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            app:layout_constraintLeft_toLeftOf="@+id/ib_reporte"
+            app:layout_constraintRight_toRightOf="@+id/ib_reporte"
+            app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero" />
+
+        <TextView
+            android:id="@+id/tv_pausarVenta"
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:text="Pausar Venta"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            app:layout_constraintLeft_toLeftOf="@+id/ib_pausar_venta"
+            app:layout_constraintRight_toRightOf="@+id/ib_pausar_venta"
+            app:layout_constraintTop_toBottomOf="@+id/ib_pausar_venta" />
+
+        <ImageButton
+            android:id="@+id/ib_referidos_influencers"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#ffffff"
+            android:src="@mipmap/ic_gruop_users"
+            app:layout_constraintLeft_toRightOf="@id/ib_reporte"
+            app:layout_constraintRight_toLeftOf="@+id/ib_reporte_financiero"
+            app:layout_constraintTop_toTopOf="@+id/ib_reporte" />
+
+        <ImageButton
+            android:id="@+id/ib_reporte_financiero"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            android:background="#ffffff"
+            android:src="@mipmap/ic_money_box"
+            app:layout_constraintLeft_toRightOf="@+id/ib_referidos_influencers"
+            app:layout_constraintRight_toLeftOf="@+id/ib_pausar_venta"
+            app:layout_constraintTop_toTopOf="@id/ib_referidos_influencers" />
+
+        <ImageButton
+            android:id="@+id/ib_reporte"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="#ffffff"
+            android:src="@mipmap/ic_report_card"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/ib_referidos_influencers"
+            app:layout_constraintTop_toBottomOf="@id/v_linea_separador" />
+
+        <ImageButton
+            android:id="@+id/ib_pausar_venta"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="0dp"
+            android:background="#ffffff"
+            android:src="@mipmap/ic_pause"
+            app:layout_constraintLeft_toRightOf="@id/ib_reporte_financiero"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ib_reporte_financiero" />
+
+        <Button
+            android:id="@+id/fpe_bt_escanear"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="80dp"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:text="Escanear"
+            android:textColor="#ffffff"
+            android:textSize="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ib_reporte"
+            app:layout_constraintVertical_bias="1.0" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

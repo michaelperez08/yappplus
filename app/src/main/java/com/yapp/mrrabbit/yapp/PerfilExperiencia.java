@@ -177,6 +177,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        eventoPerfil = MainActivity.evento;
         cargarElemntosVisuales();
         disponibles_entrada1 = 0;
         disponibles_entrada2 = 0;

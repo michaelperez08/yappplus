@@ -36,6 +36,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
     repositories {
         maven {

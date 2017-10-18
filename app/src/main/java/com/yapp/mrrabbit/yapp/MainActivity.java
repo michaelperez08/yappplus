@@ -3,7 +3,6 @@ package com.yapp.mrrabbit.yapp;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,17 +13,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import com.google.zxing.integration.android.IntentIntegrator;
+
+import java.util.concurrent.Callable;
 
 
 public class MainActivity extends AppCompatActivity
@@ -33,13 +27,16 @@ public class MainActivity extends AppCompatActivity
     private MenuItem amiMegaphone;
     private MenuItem amiAnunciate;
     private MenuItem amiBuscar;
-
+    private FragmentManager fragmentManager;
+    private Fragment fragment;
     private Menu actionMenu;
+    public static Evento evento;
+
+    private IntentIntegrator qrScan;
 
     //private MaterialSearchView searchView;
     private SearchView searchView;
-    private ProgressDialog progress;
-    private ProgressBar pb;
+    private static ProgressDialog progress;
 
     public static Context appContext;
 
@@ -63,7 +60,9 @@ public class MainActivity extends AppCompatActivity
 
         setTitle("");
 
-        appContext = getApplicationContext();
+        appContext = this;
+
+
     }
 
 
@@ -144,30 +143,56 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
+        fragment = null;
         esconderItemsActionMenu();
-
         if (id == R.id.nav_perfil) {
-            DataAccess da = new DataAccess();
             fragment = new PerfilExperiencia();
-            displayDialogLoading();
-            ((PerfilExperiencia)fragment).setEventoPerfil(da.getInfoEventoSales(425960));
-            dismissLoading();
+            Callable<Void> setEventoPerfilExperiencia = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    ((PerfilExperiencia)fragment).setEventoPerfil(evento);
+                    return null;
+                }
+            };
+            cargarEventoById(425960, setEventoPerfilExperiencia);
             amiMegaphone.setVisible(true);
             amiAnunciate.setVisible(true);
         } else if (id == R.id.nav_escaner_qr) {
             fragment = new Escanear();
+            Callable<Void> setEventoEscanear = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    ((Escanear)fragment).setEvento(evento);
+                    return null;
+                }
+            };
+            cargarEventoById(425960, setEventoEscanear);
             amiBuscar.setVisible(true);
-        }
-
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void cargarEventoById(final int idEvento, final Callable method){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getEventoById(idEvento);
+                getTipoTiquetesEvento(idEvento);
+                try {
+                    method.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                dismissLoading();
+                abrirFragment();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
     }
 
     public void esconderItemsActionMenu(){
@@ -184,8 +209,27 @@ public class MainActivity extends AppCompatActivity
         progress.show();
     }
 
+    public void getEventoById(final int id){
+        DataAccess da = new DataAccess();
+        evento = da.getInfoEventoSales(id);
+    }
+
+    public void getTipoTiquetesEvento(final int id){
+        if(evento!=null){
+            DataAccess da = new DataAccess();
+            evento.setTipoTiquetes(da.getTipoTiquetesEvento(id));
+        }
+    }
+
     public void dismissLoading(){
-        progress.dismiss();
+        if(progress!=null) {
+            progress.dismiss();
+        }
+    }
+
+    public void abrirFragment(){
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
     }
 
     public MenuItem getAmiMegaphone() {

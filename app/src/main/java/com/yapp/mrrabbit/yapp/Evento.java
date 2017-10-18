@@ -1,5 +1,7 @@
 package com.yapp.mrrabbit.yapp;
 
+import java.util.ArrayList;
+
 /**
  * Created by michael on 21/09/17.
  */
@@ -11,6 +13,9 @@ public class Evento {
     private String fotoPerfilURL;
     private int todaySales, weekSales, monthSales, totalSales;
     private double todayMoney, weekMoney, monthMoney, totalMoney;
+    private ArrayList<TipoTiquete> tipoTiquetes;
+    private ArrayList<Influencers> influencers;
+    private ArrayList<Tiquete> tiquetesEvento;
 
     public Evento(int idEvento, String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney) {
         this.idEvento = idEvento;
@@ -37,6 +42,25 @@ public class Evento {
         this.weekMoney = weekMoney;
         this.monthMoney = monthMoney;
         this.totalMoney = totalMoney;
+    }
+
+    public Evento() {
+    }
+
+    public int getTotalTiquetesEscaneados(){
+        int total = 0;
+        for (TipoTiquete temp_ticket: tipoTiquetes) {
+            total += temp_ticket.getTiquetesEscaneados();
+        }
+        return  total;
+    }
+
+    public int getTotalTiquetesVendidos(){
+        int total = 0;
+        for (TipoTiquete temp_ticket: tipoTiquetes) {
+            total += temp_ticket.getTiquetesVendidos();
+        }
+        return  total;
     }
 
     public int getIdEvento() {
@@ -125,5 +149,29 @@ public class Evento {
 
     public void settotalMoney(double totalMoney) {
         this.totalMoney = totalMoney;
+    }
+
+    public ArrayList<TipoTiquete> getTipoTiquetes() {
+        return tipoTiquetes;
+    }
+
+    public void setTipoTiquetes(ArrayList<TipoTiquete> tipoTiquetes) {
+        this.tipoTiquetes = tipoTiquetes;
+    }
+
+    public ArrayList<Influencers> getInfluencers() {
+        return influencers;
+    }
+
+    public void setInfluencers(ArrayList<Influencers> influencers) {
+        this.influencers = influencers;
+    }
+
+    public ArrayList<Tiquete> getTiquetesEvento() {
+        return tiquetesEvento;
+    }
+
+    public void setTiquetesEvento(ArrayList<Tiquete> tiquetesEvento) {
+        this.tiquetesEvento = tiquetesEvento;
     }
 }
