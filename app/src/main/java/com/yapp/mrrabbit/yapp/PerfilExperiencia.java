@@ -23,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,7 +59,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
     private boolean ventaPausada;
 
-    private ProgressDialog nDialog;
+    private ProgressDialog progress;
 
     private int disponibles_entrada1, disponibles_entrada2;
 
@@ -129,33 +131,94 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 ((MainActivity)getActivity()).getAmiBuscar().setVisible(true);
                 break;
             case R.id.ib_referidos_influencers:
-                desplegarSpinnerCargando();
-                abrirDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
-                añadirInfluencers(dialogView);
+                cargarDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
+                getInfluencersPorEvento();
                 excel_enviado = false;
-                bt_accion_dialog.setOnClickListener(enviar_excel_influencers());
-                cerrarSpinnerCargando();
+                bt_accion_dialog.setOnClickListener(enviar_excel("send_report"));
                 break;
             case R.id.ib_reporte_financiero:
-                abrirDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, R.id.bt_solcitar_adelanto);
+                cargarDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, R.id.bt_solcitar_adelanto);
+                desplegarPopUpFinanzas();
                 bt_accion_dialog.setOnClickListener(solicitarAdelanto());
                 break;
             case R.id.ib_reporte:
-                abrirDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, R.id.bt_enviar_excel_reporte);
+                cargarDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, R.id.bt_enviar_excel_reporte);
                 excel_enviado = false;
-                bt_accion_dialog.setOnClickListener(enviar_excel_reporte());
+                bt_accion_dialog.setOnClickListener(enviar_excel("send_report"));
+                dialog.show();
                 break;
             case R.id.ib_pausar_venta:
-                abrirDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
+                cargarDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
                 cargarElementosPausarVenta();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
+                dialog.show();
                 break;
 
         }
-
     }
 
-    public void abrirDialogo(int resource, int tv_cerrar_dialog, int bt_dialog){
+    public void getInfluencersPorEvento(){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataAccess da = new DataAccess();
+                eventoPerfil.setInfluencers(da.getInfluencersEvento(eventoPerfil.getIdEvento()));
+                if(!eventoPerfil.getInfluencers().isEmpty()) {
+                    añadirInfluencers();
+                    showDialogFromOtherThread();
+                }else{
+                    showToastFromOtherThread("Este evento no cuenta con influencers");
+                }
+                dismissLoading();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
+    }
+
+    public void desplegarPopUpFinanzas(){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!eventoPerfil.getTipoTiquetes().isEmpty()) {
+                    cargarFinanzas();
+                    showDialogFromOtherThread();
+                }else{
+                    showToastFromOtherThread("Este evento no cuenta datos de finanzas");
+                }
+                dismissLoading();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
+    }
+
+    public View.OnClickListener enviar_excel(final String url){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayDialogLoading();
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DataAccess da = new DataAccess();
+                        if(da.envarExcel(eventoPerfil.getIdEvento(), url)){
+                            showToastFromOtherThread("Excel enviado");
+                        }else{
+                            showToastFromOtherThread("Hubo un problema al enviar el excel, intente de nuevo mas tarde");
+                        }
+                        dismissLoading();
+                        Thread.currentThread().interrupt();
+                    }
+                });
+                t.start();
+            }
+        };
+    }
+
+    public void cargarDialogo(int resource, int tv_cerrar_dialog, int bt_dialog){
         AlertDialog.Builder mBuilder = new AlertDialog.Builder((MainActivity)getActivity());
         dialogView = getActivity().getLayoutInflater().inflate(resource, null);
 
@@ -166,7 +229,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
         mBuilder.setView(dialogView);
         dialog = mBuilder.create();
-        dialog.show();
     }
 
     public interface OnFragmentInteractionListener {
@@ -227,64 +289,76 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
 
 
-    public void añadirInfluencers(View dialog){
-        //View dialog = getActivity().getLayoutInflater().inflate(R.layout.dialog_influencers, null);
-        ConstraintLayout layout = (ConstraintLayout) dialog.findViewById(R.id.dialog_influencers);
+    public void añadirInfluencers(){
+
+        ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_influencers);
         ConstraintSet set = new ConstraintSet();
 
         int id_nombre_anterior = R.id.textView21;
-        int id_separaodor_1_anterior = 0;
+        /*int id_separaodor_1_anterior = 0;
         int id_correo_anterior= 0;
         int id_separaodor_2_anterior = 0;
-        int id_cantidad_anterior = 0;
+        int id_cantidad_anterior = 0;*/
 
-        for (int i=1; i<40; i++){
-            TextView tv_nombre = new TextView(getActivity());
-            tv_nombre.setText("Michael "+i);
-            tv_nombre.setWidth(140);
-            tv_nombre.setId(i);
+        for (int i=1; i<=eventoPerfil.getInfluencers().size(); i++){
+            TextView tv_nombre_tiquete = new TextView(getActivity());
+            tv_nombre_tiquete.setText(eventoPerfil.getInfluencers().get(i-1).getNombre());
+            tv_nombre_tiquete.setWidth(160);
+            tv_nombre_tiquete.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_nombre_tiquete.setId(i);
 
             TextView tv_separador_1 = new TextView(getActivity());
             tv_separador_1.setText("|");
+            tv_separador_1.setWidth(5);
             tv_separador_1.setId(40+i);
 
             TextView tv_correo = new TextView(getActivity());
-            tv_correo.setText("michael.pemu@gmail.com");
-            tv_nombre.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_correo.setText(eventoPerfil.getInfluencers().get(i-1).getCorreo());
+            tv_correo.setGravity(Gravity.CENTER_HORIZONTAL);
             tv_correo.setWidth(340);
             tv_correo.setId(80+i);
 
             TextView tv_separador_2 = new TextView(getActivity());
             tv_separador_2.setText("|");
+            tv_separador_2.setWidth(5);
             tv_separador_2.setId(120+i);
 
-            TextView tv_cantidad = new TextView(getActivity());
-            tv_cantidad.setText("22");
-            tv_cantidad.setWidth(50);
-            tv_cantidad.setId(160+i);
+            TextView tv_dinero = new TextView(getActivity());
+            tv_dinero.setText(String.valueOf(eventoPerfil.getInfluencers().get(i-1).getCantidad()+200));
+            tv_dinero.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_dinero.setWidth(50);
+            tv_dinero.setId(160+i);
+
+            float textSize = 12;
+
+            tv_nombre_tiquete.setTextSize(textSize);
+            tv_correo.setTextSize(textSize);
+            tv_dinero.setTextSize(textSize);
+            tv_separador_1.setTextSize(textSize);
+            tv_separador_2.setTextSize(textSize);
 
             View v_inea = new View(getActivity());
             v_inea.setId(200+i);
             v_inea.setBackgroundColor(Color.parseColor("#D3D3D3"));
             v_inea.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
 
-            layout.addView(tv_nombre, 0);
+            layout.addView(tv_nombre_tiquete, 0);
             layout.addView(tv_separador_1, 0);
             layout.addView(tv_correo, 0);
             layout.addView(tv_separador_2, 0);
-            layout.addView(tv_cantidad, 0);
+            layout.addView(tv_dinero, 0);
             layout.addView(v_inea, 0);
 
             set.clone(layout);
 
             //contrain del nombre
-            set.connect(tv_nombre.getId(), ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 10);
-            set.connect(tv_nombre.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
-            set.connect(tv_nombre.getId(), ConstraintSet.RIGHT, tv_separador_1.getId(), ConstraintSet.LEFT);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 10);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.RIGHT, tv_separador_1.getId(), ConstraintSet.LEFT);
 
             //constrain separador 1
-            set.connect(tv_separador_1.getId(), ConstraintSet.TOP, tv_nombre.getId(), ConstraintSet.TOP);
-            set.connect(tv_separador_1.getId(), ConstraintSet.LEFT, tv_nombre.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_separador_1.getId(), ConstraintSet.TOP, tv_nombre_tiquete.getId(), ConstraintSet.TOP);
+            set.connect(tv_separador_1.getId(), ConstraintSet.LEFT, tv_nombre_tiquete.getId(), ConstraintSet.RIGHT);
             set.connect(tv_separador_1.getId(), ConstraintSet.RIGHT, tv_correo.getId(), ConstraintSet.LEFT);
 
             //constrain correo
@@ -295,15 +369,15 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             //constrain separador 2
             set.connect(tv_separador_2.getId(), ConstraintSet.TOP, tv_correo.getId(), ConstraintSet.TOP);
             set.connect(tv_separador_2.getId(), ConstraintSet.LEFT, tv_correo.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_separador_2.getId(), ConstraintSet.RIGHT, tv_cantidad.getId(), ConstraintSet.LEFT);
+            set.connect(tv_separador_2.getId(), ConstraintSet.RIGHT, tv_dinero.getId(), ConstraintSet.LEFT);
 
             //constrain cantidad
-            set.connect(tv_cantidad.getId(), ConstraintSet.TOP, tv_separador_2.getId(), ConstraintSet.TOP);
-            set.connect(tv_cantidad.getId(), ConstraintSet.LEFT, tv_separador_2.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_cantidad.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_dinero.getId(), ConstraintSet.TOP, tv_separador_2.getId(), ConstraintSet.TOP);
+            set.connect(tv_dinero.getId(), ConstraintSet.LEFT, tv_separador_2.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_dinero.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
 
             //contrain linea view
-            set.connect(v_inea.getId(), ConstraintSet.TOP, tv_nombre.getId(), ConstraintSet.BOTTOM);
+            set.connect(v_inea.getId(), ConstraintSet.TOP, tv_nombre_tiquete.getId(), ConstraintSet.BOTTOM);
 
             set.applyTo(layout);
 
@@ -312,7 +386,99 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
         set.connect(R.id.bt_enviar_excel_influencers, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
         set.applyTo(layout);
-        nDialog.dismiss();
+    }
+
+    public void cargarFinanzas(){
+
+        ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_finanzas);
+        ConstraintSet set = new ConstraintSet();
+
+        TipoTiquete ttTemp = eventoPerfil.getTipoTiquetes().get(0);
+
+        ((TextView)dialogView.findViewById(R.id.tv_tipo_entrada_1)).setText(ttTemp.getNombre());
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_tipoentrada_1)).setText("$"+String.valueOf(ttTemp.getDineroSubtotal()));
+        ((TextView)dialogView.findViewById(R.id.tv_numero_entradas_1)).setText(String.valueOf(ttTemp.getTiquetesVendidos()));
+
+        int id_nombre_anterior = R.id.tv_tipo_entrada_1;
+        int id_cantidad_anterior = R.id.tv_numero_entradas_1;
+        int id_dinero_anterior = R.id.tv_dinero_tipoentrada_1;
+        int size = eventoPerfil.getTipoTiquetes().size();
+
+        int subtotalEntradas = 0;
+        double subtotalDinero = 0;
+        double comision = 0;
+        double recibiras = 0;
+
+
+        for (int i=1; i<size; i++){
+            ttTemp = eventoPerfil.getTipoTiquetes().get(i);
+
+            TextView tv_nombre_tiquete = new TextView(getActivity());
+            tv_nombre_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_nombre_tiquete.setText(ttTemp.getNombre());
+            tv_nombre_tiquete.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_nombre_tiquete.setId(i);
+
+            subtotalEntradas += ttTemp.getTiquetesVendidos();
+            TextView tv_cantidad = new TextView(getActivity());
+            tv_cantidad.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_cantidad.setText(String.valueOf(ttTemp.getTiquetesVendidos()));
+            tv_cantidad.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_cantidad.setId((size*1)+i);
+
+            subtotalDinero += ttTemp.getDineroSubtotal();
+            TextView tv_dinero = new TextView(getActivity());
+            tv_dinero.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_dinero.setText("$"+String.valueOf(ttTemp.getDineroSubtotal()));
+            tv_dinero.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_dinero.setId((size*2)+i);
+
+            View v_inea = new View(getActivity());
+            v_inea.setId((size*3)+i);
+            v_inea.setBackgroundColor(Color.parseColor("#D3D3D3"));
+            v_inea.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
+
+            layout.addView(tv_nombre_tiquete, 0);
+            layout.addView(tv_cantidad, 0);
+            layout.addView(tv_dinero, 0);
+            layout.addView(v_inea, 0);
+
+            set.clone(layout);
+
+            //contrain del nombre
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.LEFT, id_nombre_anterior, ConstraintSet.LEFT, 10);
+
+            //constrain cantidad entradas
+            set.connect(tv_cantidad.getId(), ConstraintSet.TOP, tv_nombre_tiquete.getId(), ConstraintSet.TOP);
+            set.connect(tv_cantidad.getId(), ConstraintSet.BOTTOM, tv_nombre_tiquete.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_cantidad.getId(), ConstraintSet.RIGHT, id_cantidad_anterior, ConstraintSet.RIGHT);
+
+            //constrain dinero entradas
+            set.connect(tv_dinero.getId(), ConstraintSet.TOP, tv_cantidad.getId(), ConstraintSet.TOP);
+            set.connect(tv_dinero.getId(), ConstraintSet.BOTTOM, tv_cantidad.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_dinero.getId(), ConstraintSet.RIGHT, id_dinero_anterior, ConstraintSet.RIGHT, 10);
+
+            //contrain linea view
+            set.connect(v_inea.getId(), ConstraintSet.TOP, tv_nombre_tiquete.getId(), ConstraintSet.BOTTOM);
+
+            set.applyTo(layout);
+
+            id_nombre_anterior = tv_nombre_tiquete.getId();
+            id_cantidad_anterior = tv_cantidad.getId();
+            id_dinero_anterior = tv_dinero.getId();
+        }
+
+        comision = subtotalDinero*0.10;
+        recibiras = subtotalDinero-comision;
+
+        ((TextView)dialogView.findViewById(R.id.tv_subtotal_numero_entradas)).setText(String.valueOf(subtotalEntradas));
+        ((TextView)dialogView.findViewById(R.id.tv_subtotal_dinero_tipoentrada)).setText(String.valueOf(subtotalDinero));
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_comision)).setText(String.valueOf(comision));
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_recibiras)).setText(String.valueOf(recibiras));
+
+        set.connect(R.id.tv_subtotal, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
+        set.applyTo(layout);
     }
 
     private void cargarElementosPausarVenta(){
@@ -341,32 +507,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             ibt_pausar_venta.setImageResource(R.mipmap.ic_play);
             tv_pausarVenta.setText("Activar Venta");
         }
-    }
-
-    private View.OnClickListener enviar_excel_influencers() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!excel_enviado){
-                    Toast.makeText(getActivity(), "Enviado", Toast.LENGTH_SHORT).show();
-                    bt_accion_dialog.setBackgroundResource(R.drawable.raduis_button_green);
-                    excel_enviado = true;
-                }
-            }
-        };
-    }
-
-    private View.OnClickListener enviar_excel_reporte() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!excel_enviado){
-                    Toast.makeText(getActivity(), "Enviado", Toast.LENGTH_SHORT).show();
-                    bt_accion_dialog.setBackgroundResource(R.drawable.raduis_button_green);
-                    excel_enviado = true;
-                }
-            }
-        };
     }
 
     private View.OnClickListener guardar_pausar_venta(final String mensaje) {
@@ -414,14 +554,17 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         startActivity(intent);
     }
 
-    public void desplegarSpinnerCargando(){
-        nDialog = ProgressDialog.show(getActivity(), "dialog title",
-                "dialog message", true);
+    public void displayDialogLoading(){
+        progress = new ProgressDialog(getActivity());
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading...");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
     }
 
-    public  void cerrarSpinnerCargando(){
-        if(nDialog!=null){
-            nDialog.dismiss();
+    public void dismissLoading(){
+        if(progress!=null) {
+            progress.dismiss();
         }
     }
 
@@ -433,6 +576,22 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             esNumero = false;
         }
         return  esNumero;
+    }
+
+    public void showDialogFromOtherThread(){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                dialog.show();
+            }
+        });
+    }
+
+    public void showToastFromOtherThread(final String mensaje){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public Evento getEventoPerfil() {

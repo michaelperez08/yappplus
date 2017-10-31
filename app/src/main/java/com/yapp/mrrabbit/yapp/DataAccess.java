@@ -21,7 +21,8 @@ import java.util.concurrent.ExecutionException;
 
 public class DataAccess {
 
-    public static final String YAPPEXPERIENCE_API_BASE_URL="http://yappdevelopers.com/webserviceplus/";
+    public static final String BASE_URL="http://yappdevelopers.com/";
+    public static final String YAPPEXPERIENCE_API_BASE_URL= BASE_URL+"webserviceplus/";
     private static HttpRequestTask request;
     private static Context context = MainActivity.appContext;
 
@@ -48,6 +49,7 @@ public class DataAccess {
     public static String getCurrentDate(String formato){
         DateFormat dateFormat = new SimpleDateFormat(formato);
         Date date = new Date();
+        
         return  dateFormat.format(date);
     }
 
@@ -82,12 +84,35 @@ public class DataAccess {
         return tipoTiquetes;
     }
 
-    public ArrayList<Tiquete> getTiquetesEvento(int idEvento){
+    public ArrayList<Influencer> getInfluencersEvento(int idEvento){
+        ArrayList<Influencer> listaInfluencers = null;
+        String result = "";
+        JSONArray jsa;
+        JSONObject jsoTemp;
+        String url = YAPPEXPERIENCE_API_BASE_URL + "referral_report?experience_id="+idEvento;
+        try {
+            result = (String) new HttpRequestTask().execute(url).get();
+            if(result!=null) {
+                listaInfluencers = new ArrayList<>();
+                jsa = JsonParser.getJsonArrayFromObject("value", JsonParser.getJsonResponse(result));
+                for(int i=0; i < jsa.length(); i++){
+                    jsoTemp = jsa.getJSONObject(i);
+                    listaInfluencers.add(new Influencer(jsoTemp.getString("Nombre_Completo"), jsoTemp.getString("Email_Primario"),jsoTemp.getInt("idUsuario"), jsoTemp.getInt("cantidadReferidos")));
+                }
+
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return listaInfluencers;
+    }
+
+    /*public ArrayList<Tiquete> getTiquetesEvento(int idEvento){
         ArrayList<Tiquete> tiquetes = null;
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
-        String url = "https://yappexperience.com/reporte/filtrar_transacciones_evento_yappplus";
+        String url = BASE_URL+"reporte/filtrar_transacciones_evento_yappplus";
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
         map.add("id_evento", String.valueOf(idEvento));
         HttpPostRequestTask hpt = new HttpPostRequestTask();
@@ -99,13 +124,54 @@ public class DataAccess {
                 jsa = JsonParser.getJsonArrayFromObject("value", JsonParser.getJsonResponse(result));
                 for(int i=0; i < jsa.length(); i++) {
                     jsoTemp = jsa.getJSONObject(i);
-                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("nombre_entrada"), jsoTemp.getString("Codigo_QR"), jsoTemp.getBoolean("Canjeada")));
-                }//int idTiquete, int idCompra, String tipoTiquete, String codigoQR, boolean canjeada
+                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("nombre_entrada"), jsoTemp.getString("Codigo_QR"),
+                            jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada")));
+                }
             }
         }catch (JSONException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return  tiquetes;
+    }*/
+
+    public ArrayList<Tiquete> getTiquetesEvento(int idEvento) {
+        ArrayList<Tiquete> tiquetes = null;
+        String result = "";
+        JSONArray jsa;
+        JSONObject jsoTemp;
+        String url = YAPPEXPERIENCE_API_BASE_URL + "get_all_tickets_info?experience_id="+idEvento;
+        try {
+            result = (String) new HttpRequestTask().execute(url).get();
+            if (result != null) {
+                tiquetes = new ArrayList<>();
+                jsa = JsonParser.getJsonArrayFromObject("value", JsonParser.getJsonResponse(result));
+                for (int i = 0; i < jsa.length(); i++) {
+                    jsoTemp = jsa.getJSONObject(i);
+                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("nombre_entrada"), jsoTemp.getString("Codigo_QR"),
+                            jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada")));
+                }
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return tiquetes;
     }
 
+    public boolean envarExcel(int idEvento, String servicio){
+        boolean enviado=false;
+        String result = "";
+        JSONObject jsoTemp;
+        String url = "https://yappexperience.com/webserviceplus/" + servicio +"?experience_id="+idEvento;
+        try {
+            result = (String) new HttpRequestTask().execute(url).get();
+            if(result!=null) {
+                jsoTemp = JsonParser.getJsonResponse(result);
+                int in = jsoTemp.getInt("result");
+                enviado = jsoTemp.getInt("result") == 1;
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return enviado;
+    }
 }

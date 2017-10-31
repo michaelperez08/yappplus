@@ -1,6 +1,7 @@
 package com.yapp.mrrabbit.yapp;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,11 +44,16 @@ public class Escanear extends Fragment implements View.OnClickListener {
     private TextView tv_tiquets_vendidos, tv_tiquets_escaneados, tv_actualizado;
     private ProgressDialog progress;
     private IntentIntegrator qrScan;
+    private ArrayList<Button> botonesEscanear;
+    private ArrayList<Tiquete> tiquetesBDLocal;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
+    private String escanerSeleccionado;
+
+    private Context contextoEscaner;
 
     public Escanear() {
         // Required empty public constructor
@@ -100,7 +108,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
             case R.id.fe_bt_sincronizar:
                 getTiquetesDisponiblesEvento();
                 sincronizar.setBackgroundResource(R.drawable.raduis_button_green);
-                sincronizar.setText("Actualizado");
+                sincronizar.setText("Actualizar");
                 break;
         }
 
@@ -113,7 +121,9 @@ public class Escanear extends Fragment implements View.OnClickListener {
             public void run() {
                 DataAccess da = new DataAccess();
                 evento.setTiquetesEvento(da.getTiquetesEvento(evento.getIdEvento()));
+                guardarTiquetesDisponiblesBD();
                 dismissLoading();
+                showToastFromOtherThread("Sincronizacion exitosa! Ya puede escanear!");
                 Thread.currentThread().interrupt();
             }
         });
@@ -130,6 +140,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         evento = MainActivity.evento;
+        contextoEscaner = getActivity().getApplicationContext();
         cargarElementosVisuales();
         cargarInfomacionEvento();
         cargarBotenesTiquetes();
@@ -159,7 +170,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
             ConstraintLayout layout = (ConstraintLayout) getActivity().findViewById(R.id.cl_fragment_escanear);
             ConstraintSet set = new ConstraintSet();
             int id_boton_anterior = R.id.bt_todos_tipos_escanear;
-
+            botonesEscanear = new ArrayList<>();
             for (int i = 0; i < evento.getTipoTiquetes().size(); i++) {
                 Button botonEscanear = new Button(getActivity());
                 botonEscanear.setId(i + 1);
@@ -187,6 +198,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
 
                 set.applyTo(layout);
                 id_boton_anterior = botonEscanear.getId();
+                botonesEscanear.add(botonEscanear);
             }
         }
     }
@@ -195,13 +207,18 @@ public class Escanear extends Fragment implements View.OnClickListener {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                qrScan = IntentIntegrator.forSupportFragment(Escanear.this);
-                qrScan.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-                qrScan.setPrompt("Escane el codigo QR");
-                qrScan.setCameraId(0);
-                qrScan.setBeepEnabled(false);
-                qrScan.setBarcodeImageEnabled(false);
-                qrScan.initiateScan();
+                escanerSeleccionado = ((Button) v).getText().toString();
+                if(sincronizar.getText().equals("Actualizar")) {
+                    qrScan = IntentIntegrator.forSupportFragment(Escanear.this);
+                    qrScan.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                    qrScan.setPrompt("Escane el codigo QR");
+                    qrScan.setCameraId(0);
+                    qrScan.setBeepEnabled(false);
+                    qrScan.setBarcodeImageEnabled(false);
+                    qrScan.initiateScan();
+                }else{
+                    Toast.makeText(contextoEscaner, "Debe sincronizar antes de escanear", Toast.LENGTH_LONG).show();
+                }
             }
         };
     }
@@ -211,9 +228,33 @@ public class Escanear extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null) {
-            Toast.makeText(getActivity(), "Escaneado: "+result.getContents(), Toast.LENGTH_LONG).show();
+            String resultadoQR = result.getContents();
+            if(resultadoQR!=null){
+                Tiquete tiqueteEscaneado = null;
+                DBTiquetesDisponibles dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
+                tiqueteEscaneado = dbtd.obtenerTiqueteByQR(resultadoQR);
+                if(tiqueteEscaneado!=null){
+                    definirAccionTiqueteEscaneado(tiqueteEscaneado, dbtd);
+                }
+            }
         }
 
+    }
+
+    public void definirAccionTiqueteEscaneado(Tiquete tiquete, DBTiquetesDisponibles dbtd){
+        if(!tiquete.isCanjeada()) {
+            if (escanerSeleccionado.equals("Todos los tipos") || tiquete.getTipoTiquete().equals(escanerSeleccionado)) {
+                if (dbtd.setCanjeado(tiquete.getIdTiquete()) > 0) {
+                    desplegarMensaje("Tiquete Valido y canjeado");
+                } else {
+                    desplegarMensaje("Error al canjear el tiquete");
+                }
+            } else {
+                desplegarMensaje("El tipo de tiquete no coicide con el escaner seleccionado");
+            }
+        }else{
+            desplegarMensaje("El tiquete ya ha sido conjeado");
+        }
     }
 
     public void displayDialogLoading(){
@@ -242,4 +283,38 @@ public class Escanear extends Fragment implements View.OnClickListener {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
+
+    public void cambiarFondoBotones(Button boton, boolean bandera){
+        if(bandera){
+            boton.setBackgroundResource(R.drawable.radius_button_blue);
+        }else{
+            boton.setBackgroundResource(R.drawable.radius_button_sincronizar);
+        }
+    }
+
+    public boolean guardarTiquetesDisponiblesBD(){
+            DBTiquetesDisponibles dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
+            tiquetesBDLocal = dbtd.obtenerTodos();
+            if(tiquetesBDLocal.isEmpty()) {
+                for (Tiquete tiquete : evento.getTiquetesEvento()) {
+                    dbtd.agregar(tiquete);
+                }
+            }else{
+
+            }
+            return true;
+    }
+
+    public void showToastFromOtherThread(final String mensaje){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void desplegarMensaje(String mensaje){
+        Toast.makeText(contextoEscaner, mensaje, Toast.LENGTH_LONG).show();
+    }
+
 }

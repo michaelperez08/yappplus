@@ -8,14 +8,15 @@ public class Tiquete {
 
     private int idTiquete, idCompra;
     private String tipoTiquete, codigoQR;
-    private boolean canjeada;
+    private boolean canjeada, sincronizada;
 
-    public Tiquete(int idTiquete, int idCompra, String tipoTiquete, String codigoQR, boolean canjeada) {
+    public Tiquete(int idTiquete, int idCompra, String tipoTiquete, String codigoQR, boolean canjeada, boolean sincronizada) {
         this.idTiquete = idTiquete;
         this.idCompra = idCompra;
         this.tipoTiquete = tipoTiquete;
         this.codigoQR = codigoQR;
         this.canjeada = canjeada;
+        this.sincronizada = sincronizada;
     }
 
     public Tiquete() {
@@ -55,6 +56,14 @@ public class Tiquete {
 
     public boolean isCanjeada() {
         return canjeada;
+    }
+
+    public boolean isSincronizada() {
+        return sincronizada;
+    }
+
+    public void setSincronizada(boolean sincronizada) {
+        this.sincronizada = sincronizada;
     }
 
     public void setCanjeada(boolean canjeada) {

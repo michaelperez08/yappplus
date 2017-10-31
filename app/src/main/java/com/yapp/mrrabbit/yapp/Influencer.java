@@ -1,20 +1,19 @@
 package com.yapp.mrrabbit.yapp;
 
 /**
- * Created by michael on 12/10/17.
+ * Created by michael on 26/10/17.
  */
 
-public class Influencers {
+public class Influencer {
 
-    private String nombre, correo, cantidad;
+    private String nombre, correo;
+    private int idUsuario, cantidad;
 
-    public Influencers(String nombre, String correo, String cantidad) {
+    public Influencer(String nombre, String correo, int idUsuario, int cantidad) {
         this.nombre = nombre;
         this.correo = correo;
+        this.idUsuario = idUsuario;
         this.cantidad = cantidad;
-    }
-
-    public Influencers() {
     }
 
     public String getNombre() {
@@ -33,11 +32,19 @@ public class Influencers {
         this.correo = correo;
     }
 
-    public String getCantidad() {
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(String cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 }

@@ -123,9 +123,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id){
             case R.id.ami_search:
@@ -143,6 +140,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        int id_entrada = 426806; //426806 Mio Gratis //425960 Cuco de pago -> para pruebas
         fragment = null;
         esconderItemsActionMenu();
         if (id == R.id.nav_perfil) {
@@ -154,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 }
             };
-            cargarEventoById(425960, setEventoPerfilExperiencia);
+            cargarEventoById(id_entrada, setEventoPerfilExperiencia);
             amiMegaphone.setVisible(true);
             amiAnunciate.setVisible(true);
         } else if (id == R.id.nav_escaner_qr) {
@@ -166,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 }
             };
-            cargarEventoById(425960, setEventoEscanear);
+            cargarEventoById(id_entrada, setEventoEscanear);
             amiBuscar.setVisible(true);
         }
 

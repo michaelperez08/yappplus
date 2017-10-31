@@ -1,5 +1,7 @@
 package com.yapp.mrrabbit.yapp;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 
 /**
@@ -14,7 +16,7 @@ public class Evento {
     private int todaySales, weekSales, monthSales, totalSales;
     private double todayMoney, weekMoney, monthMoney, totalMoney;
     private ArrayList<TipoTiquete> tipoTiquetes;
-    private ArrayList<Influencers> influencers;
+    private ArrayList<Influencer> influencers;
     private ArrayList<Tiquete> tiquetesEvento;
 
     public Evento(int idEvento, String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney) {
@@ -45,6 +47,7 @@ public class Evento {
     }
 
     public Evento() {
+
     }
 
     public int getTotalTiquetesEscaneados(){
@@ -159,11 +162,11 @@ public class Evento {
         this.tipoTiquetes = tipoTiquetes;
     }
 
-    public ArrayList<Influencers> getInfluencers() {
+    public ArrayList<Influencer> getInfluencers() {
         return influencers;
     }
 
-    public void setInfluencers(ArrayList<Influencers> influencers) {
+    public void setInfluencers(ArrayList<Influencer> influencers) {
         this.influencers = influencers;
     }
 
