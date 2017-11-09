@@ -139,15 +139,15 @@ public class DataAccess {
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
-        String url = YAPPEXPERIENCE_API_BASE_URL + "get_all_tickets_info?experience_id="+idEvento;
+        String url = YAPPEXPERIENCE_API_BASE_URL + "get_events_tickets_yappplus?id_usuario=700009&id_evento="+idEvento; //su id es 700009 y el mío 100298
         try {
             result = (String) new HttpRequestTask().execute(url).get();
             if (result != null) {
                 tiquetes = new ArrayList<>();
-                jsa = JsonParser.getJsonArrayFromObject("value", JsonParser.getJsonResponse(result));
+                jsa = JsonParser.getJsonArrayFromObject("entradas", JsonParser.getJsonResponse(result));
                 for (int i = 0; i < jsa.length(); i++) {
                     jsoTemp = jsa.getJSONObject(i);
-                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("nombre_entrada"), jsoTemp.getString("Codigo_QR"),
+                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("Nombre_Modulo"), jsoTemp.getString("Codigo_QR"),
                             jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada")));
                 }
             }
@@ -168,6 +168,30 @@ public class DataAccess {
                 jsoTemp = JsonParser.getJsonResponse(result);
                 int in = jsoTemp.getInt("result");
                 enviado = jsoTemp.getInt("result") == 1;
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return enviado;
+    }
+
+    public boolean subirTiuetesEscaneadosAlServidor(String codigo){
+        boolean enviado=false;
+        ArrayList<Tiquete> tiquetes = null;
+        String result = "";
+        JSONArray jsa;
+        JSONObject jsoTemp;
+        String url = "https://yappexperience.com/boleteria_offline/escanear_entrada_offline_yappplus";
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.add("id_entrada", codigo);
+        map.add("fecha_escaneo", getCurrentDate("yyyy-MM-dd"));
+        HttpPostRequestTask hpt = new HttpPostRequestTask();
+        hpt.setMap(map);
+        try {
+            result = (String) hpt.execute(url).get();
+            if(result!=null) {
+                jsoTemp = JsonParser.getJsonResponse(result);
+                enviado = jsoTemp.getInt("resultado") == 1;
             }
         } catch (JSONException | InterruptedException | ExecutionException e) {
             e.printStackTrace();

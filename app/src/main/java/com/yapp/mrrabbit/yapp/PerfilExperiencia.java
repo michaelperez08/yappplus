@@ -3,6 +3,7 @@ package com.yapp.mrrabbit.yapp;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Layout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -128,7 +132,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction().replace(R.id.main_content, fragment).commit();
                 ((MainActivity)getActivity()).esconderItemsActionMenu();
-                ((MainActivity)getActivity()).getAmiBuscar().setVisible(true);
+                //((MainActivity)getActivity()).getAmiBuscar().setVisible(true);
                 break;
             case R.id.ib_referidos_influencers:
                 cargarDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
@@ -143,15 +147,15 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 break;
             case R.id.ib_reporte:
                 cargarDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, R.id.bt_enviar_excel_reporte);
+                desplegarPopUpReporte();
                 excel_enviado = false;
                 bt_accion_dialog.setOnClickListener(enviar_excel("send_report"));
-                dialog.show();
                 break;
             case R.id.ib_pausar_venta:
                 cargarDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
                 cargarElementosPausarVenta();
+                desplegarPopUpPausarVentas();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
-                dialog.show();
                 break;
 
         }
@@ -168,7 +172,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                     añadirInfluencers();
                     showDialogFromOtherThread();
                 }else{
-                    showToastFromOtherThread("Este evento no cuenta con influencers");
+                    showToastFromOtherThread("Tu experiencia no tiene influencers aún");
                 }
                 dismissLoading();
                 Thread.currentThread().interrupt();
@@ -187,6 +191,42 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                     showDialogFromOtherThread();
                 }else{
                     showToastFromOtherThread("Este evento no cuenta datos de finanzas");
+                }
+                dismissLoading();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
+    }
+
+    public void desplegarPopUpReporte(){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!eventoPerfil.getTipoTiquetes().isEmpty()) {
+                    cargarReporte();
+                    showDialogFromOtherThread();
+                }else{
+                    showToastFromOtherThread("Este evento no cuenta datos de reporte");
+                }
+                dismissLoading();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
+    }
+
+    public void desplegarPopUpPausarVentas(){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!eventoPerfil.getTipoTiquetes().isEmpty()) {
+                    cargarPausarVenta();
+                    showDialogFromOtherThread();
+                }else{
+                    showToastFromOtherThread("Este evento no cuenta con entradas");
                 }
                 dismissLoading();
                 Thread.currentThread().interrupt();
@@ -481,21 +521,269 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         set.applyTo(layout);
     }
 
+    public void cargarReporte(){
+        ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_reporte);
+        ConstraintSet set = new ConstraintSet();
+
+        int id_tipo_entrada_anterior_vendida = R.id.tv_ventas;
+        int id_tipo_entrada_anterior_escaneada = R.id.tv_escaneo;
+        int size = eventoPerfil.getTipoTiquetes().size();
+
+        TipoTiquete tipoTemp = null;
+        int id = 0;
+        for (int i = 0; i < size; i++) {
+            tipoTemp = eventoPerfil.getTipoTiquetes().get(i);
+            //Tiquetes Vendidos
+            id = i+1;
+            TextView tv_tiquete = new TextView(getActivity());
+            tv_tiquete.setId(id);
+            tv_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
+            tv_tiquete.setBackgroundResource(R.drawable.radius_border);
+            tv_tiquete.setGravity(Gravity.CENTER);
+            tv_tiquete.setTextSize(20);
+            tv_tiquete.setTextColor(Color.BLACK);
+            tv_tiquete.setTypeface(null, Typeface.BOLD);
+            tv_tiquete.setText(String.valueOf(tipoTemp.getTiquetesVendidos()));
+
+            TextView tv_dinero_tiquete = new TextView(getActivity());
+            tv_dinero_tiquete.setId(size+id);
+            tv_dinero_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_dinero_tiquete.setGravity(Gravity.CENTER);
+            tv_dinero_tiquete.setTextSize(15);
+            tv_dinero_tiquete.setTextColor(Color.parseColor("#FF4081"));
+            tv_dinero_tiquete.setTypeface(null, Typeface.BOLD);
+            tv_dinero_tiquete.setText("$"+String.valueOf(tipoTemp.getDineroSubtotal()));
+
+            TextView tv_nombre_tiquete = new TextView(getActivity());
+            tv_nombre_tiquete.setId((2*size)+id);
+            tv_nombre_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_nombre_tiquete.setMaxWidth(130);
+            tv_nombre_tiquete.setGravity(Gravity.CENTER);
+            tv_nombre_tiquete.setTextSize(11);
+            tv_nombre_tiquete.setText(String.valueOf(tipoTemp.getNombre()));
+
+
+            //Tiquetes Escaneados
+            TextView tv_tiquete_escaneado = new TextView(getActivity());
+            tv_tiquete_escaneado.setId((3*size)+id);
+            tv_tiquete_escaneado.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
+            tv_tiquete_escaneado.setBackgroundResource(R.drawable.radius_border);
+            tv_tiquete_escaneado.setGravity(Gravity.CENTER);
+            tv_tiquete_escaneado.setTextSize(20);
+            tv_tiquete_escaneado.setTextColor(Color.BLACK);
+            tv_tiquete_escaneado.setTypeface(null, Typeface.BOLD);
+            tv_tiquete_escaneado.setText(String.valueOf(i));
+
+            TextView tv_nombre_tiquete_escaneado = new TextView(getActivity());
+            tv_nombre_tiquete_escaneado.setId((4*size)+id);
+            tv_nombre_tiquete_escaneado.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_nombre_tiquete_escaneado.setMaxWidth(130);
+            tv_nombre_tiquete_escaneado.setGravity(Gravity.CENTER);
+            tv_nombre_tiquete_escaneado.setTextSize(11);
+            tv_nombre_tiquete_escaneado.setText(String.valueOf(tipoTemp.getNombre()));
+
+            layout.addView(tv_tiquete);
+            layout.addView(tv_dinero_tiquete);
+            layout.addView(tv_nombre_tiquete);
+            layout.addView(tv_tiquete_escaneado);
+            layout.addView(tv_nombre_tiquete_escaneado);
+
+            set.clone(layout);
+
+            if(i==0 || i%4==0){
+                set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.BOTTOM, marginCorrectoTvTiquete(i));
+                set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 20);
+                //set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, tv_tiquete.getId()+1, ConstraintSet.RIGHT);
+
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, marginCorrectoTvTiquete(i));
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 20);
+                //set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT, tv_tiquete_escaneado.getId()+1, ConstraintSet.RIGHT);
+            }else if((i+1)%4==0){
+                set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.TOP);
+                set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT);
+                set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.TOP);
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_escaneada, ConstraintSet.RIGHT);
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+
+                set.connect(id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT, tv_tiquete.getId(), ConstraintSet.LEFT);
+                set.connect(id_tipo_entrada_anterior_escaneada, ConstraintSet.RIGHT, tv_tiquete_escaneado.getId(), ConstraintSet.LEFT);
+            }else{
+                set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.TOP);
+                set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT);
+                //set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, tv_tiquete.getId()+1, ConstraintSet.RIGHT);
+
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.TOP);
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_escaneada, ConstraintSet.RIGHT);
+                //set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT, tv_tiquete_escaneado.getId()+1, ConstraintSet.RIGHT);
+
+                set.connect(id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT, tv_tiquete.getId(), ConstraintSet.LEFT);
+                set.connect(id_tipo_entrada_anterior_escaneada, ConstraintSet.RIGHT, tv_tiquete_escaneado.getId(), ConstraintSet.LEFT);
+            }
+
+            if(i == size-1){
+                set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+                set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+            }
+
+            //constrain del tv_dinero_tiquete
+            set.connect(tv_dinero_tiquete.getId(), ConstraintSet.BOTTOM, tv_tiquete.getId(), ConstraintSet.BOTTOM, 0);
+            set.connect(tv_dinero_tiquete.getId(), ConstraintSet.LEFT, tv_tiquete.getId(), ConstraintSet.LEFT, 0);
+            set.connect(tv_dinero_tiquete.getId(), ConstraintSet.RIGHT, tv_tiquete.getId(), ConstraintSet.RIGHT, 0);
+
+            //constrain del tv_nombre_tiquete
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.TOP, tv_tiquete.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.LEFT, tv_tiquete.getId(), ConstraintSet.LEFT);
+            set.connect(tv_nombre_tiquete.getId(), ConstraintSet.RIGHT, tv_tiquete.getId(), ConstraintSet.RIGHT);
+
+            //constrain del tv_nomobre_tiquete_escaneado
+            set.connect(tv_nombre_tiquete_escaneado.getId(), ConstraintSet.TOP, tv_tiquete_escaneado.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_nombre_tiquete_escaneado.getId(), ConstraintSet.LEFT, tv_tiquete_escaneado.getId(), ConstraintSet.LEFT);
+            set.connect(tv_nombre_tiquete_escaneado.getId(), ConstraintSet.RIGHT, tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT);
+
+            set.applyTo(layout);
+
+            id_tipo_entrada_anterior_vendida = tv_tiquete.getId();
+            id_tipo_entrada_anterior_escaneada = tv_tiquete_escaneado.getId();
+        }
+
+        set.connect(R.id.tv_escaneo, ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.BOTTOM, 100);
+        //set.connect(R.id.tv_escaneo_1, ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, 70);
+        set.connect(R.id.bt_enviar_excel_reporte, ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, 100);
+        set.applyTo(layout);
+    }
+
+    public void cargarPausarVenta(){
+        ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_pausar_venta);
+        ConstraintSet set = new ConstraintSet();
+
+        int id_view_anterior = R.id.view_pausar_venta;
+        int size = eventoPerfil.getTipoTiquetes().size();
+
+        TipoTiquete tipoTemp = null;
+        for (int i = 1; i <= size; i++) {
+            tipoTemp = eventoPerfil.getTipoTiquetes().get(i-1);
+
+            TextView tv_nombre_entrada = new TextView(getActivity());
+            tv_nombre_entrada.setId(i);
+            tv_nombre_entrada.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_nombre_entrada.setTextColor(Color.parseColor("#cfcfcf"));
+            tv_nombre_entrada.setTextSize(20);
+            tv_nombre_entrada.setGravity(Gravity.CENTER);
+            tv_nombre_entrada.setText(tipoTemp.getNombre());
+
+            EditText et_disponibles = new EditText(getActivity());
+            et_disponibles.setId(size+i);
+            et_disponibles.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
+            et_disponibles.setBackgroundResource(R.drawable.radius_border);
+            et_disponibles.setText(String.valueOf(tipoTemp.getTiquetesDisponibles()));
+            et_disponibles.setGravity(Gravity.CENTER);
+            //et_disponibles.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            et_disponibles.setTextSize(20);
+            et_disponibles.setTextColor(Color.BLACK);
+            et_disponibles.setTypeface(null, Typeface.BOLD);
+            et_disponibles.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+            TextView tv_texto_disponibles = new TextView(getActivity());
+            tv_texto_disponibles.setId((size*2)+i);
+            tv_texto_disponibles.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_texto_disponibles.setTextColor(Color.parseColor("#cfcfcf"));
+            tv_texto_disponibles.setTextSize(12);
+            tv_texto_disponibles.setText("Disponibles");
+
+            EditText et_mensaje = new EditText(getActivity());
+            et_mensaje.setId((size*3)+i);
+            et_mensaje.setLayoutParams(new ConstraintLayout.LayoutParams(440, 65));
+            et_mensaje.setTextSize(16);
+            et_mensaje.setGravity(Gravity.CENTER);
+            et_mensaje.setTextColor(Color.BLACK);
+            et_mensaje.setBackgroundResource(R.drawable.black_border);
+            et_mensaje.setText("Entradas Agotadas"); //pendiente
+
+            TextView tv_texto_mensaje_clientes = new TextView(getActivity());
+            tv_texto_mensaje_clientes.setId((size*4)+i);
+            tv_texto_mensaje_clientes.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv_texto_mensaje_clientes.setTextColor(Color.parseColor("#cfcfcf"));
+            tv_texto_mensaje_clientes.setTextSize(12);
+            tv_texto_mensaje_clientes.setText("Mensaje para los clientes");
+
+            View v_inea = new View(getActivity());
+            v_inea.setId((size*5)+i);
+            v_inea.setBackgroundColor(Color.parseColor("#D3D3D3"));
+            v_inea.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
+
+            layout.addView(tv_nombre_entrada);
+            layout.addView(et_disponibles);
+            layout.addView(tv_texto_disponibles);
+            layout.addView(et_mensaje);
+            layout.addView(tv_texto_mensaje_clientes);
+            layout.addView(v_inea);
+
+            set.clone(layout);
+
+            //contrain tv_nombre entrada
+            set.connect(tv_nombre_entrada.getId(), ConstraintSet.TOP, id_view_anterior, ConstraintSet.BOTTOM, 16);
+            set.connect(tv_nombre_entrada.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
+            set.connect(tv_nombre_entrada.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+
+            //contrain et_disponibles
+            set.connect(et_disponibles.getId(), ConstraintSet.TOP, tv_nombre_entrada.getId(), ConstraintSet.BOTTOM, 20);
+            set.connect(et_disponibles.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
+            set.connect(et_disponibles.getId(), ConstraintSet.RIGHT, et_mensaje.getId(), ConstraintSet.LEFT);
+
+            //contrain tv_texto_disponibles
+            set.connect(tv_texto_disponibles.getId(), ConstraintSet.TOP, et_disponibles.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_texto_disponibles.getId(), ConstraintSet.LEFT, et_disponibles.getId(), ConstraintSet.LEFT);
+            set.connect(tv_texto_disponibles.getId(), ConstraintSet.RIGHT, et_disponibles.getId(), ConstraintSet.RIGHT);
+
+            //contrain et_mensaje
+            set.connect(et_mensaje.getId(), ConstraintSet.TOP, et_disponibles.getId(), ConstraintSet.TOP);
+            set.connect(et_mensaje.getId(), ConstraintSet.BOTTOM, et_disponibles.getId(), ConstraintSet.BOTTOM);
+            set.connect(et_mensaje.getId(), ConstraintSet.LEFT, et_disponibles.getId(), ConstraintSet.RIGHT);
+            set.connect(et_mensaje.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+
+            //contrain tv_texto_mensaje_clientes
+            set.connect(tv_texto_mensaje_clientes.getId(), ConstraintSet.TOP, et_mensaje.getId(), ConstraintSet.BOTTOM);
+            set.connect(tv_texto_mensaje_clientes.getId(), ConstraintSet.LEFT, et_mensaje.getId(), ConstraintSet.LEFT);
+            set.connect(tv_texto_mensaje_clientes.getId(), ConstraintSet.RIGHT, et_mensaje.getId(), ConstraintSet.RIGHT);
+
+            //contrain view
+            set.connect(v_inea.getId(), ConstraintSet.TOP, tv_texto_disponibles.getId(), ConstraintSet.BOTTOM, 40);
+            set.connect(v_inea.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
+            set.connect(v_inea.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+
+            set.applyTo(layout);
+            id_view_anterior = v_inea.getId();
+        }
+
+        set.connect(R.id.bt_guardar_pausar_venta, ConstraintSet.TOP, id_view_anterior, ConstraintSet.BOTTOM, 20);
+        set.applyTo(layout);
+    }
+
+    public int marginCorrectoTvTiquete(int index){
+        if(index>=4){
+            return 80;
+        }else{
+            return 20;
+        }
+    }
+
     private void cargarElementosPausarVenta(){
-        etEntrada1 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_1);
-        etEntrada2 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_2);
+        //etEntrada1 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_1);
+        //etEntrada2 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_2);
 
-        etEntrada1.setText(String.valueOf(disponibles_entrada1));
-        etEntrada2.setText(String.valueOf(disponibles_entrada2));
+       // etEntrada1.setText(String.valueOf(disponibles_entrada1));
+        //etEntrada2.setText(String.valueOf(disponibles_entrada2));
 
-        etEntrada1.setSelection(etEntrada1.getText().length());
-        etEntrada2.setSelection(etEntrada2.getText().length());
+        //etEntrada1.setSelection(etEntrada1.getText().length());
+        //etEntrada2.setSelection(etEntrada2.getText().length());
 
-        etEntrada1.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
-        etEntrada2.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
+        //etEntrada1.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
+        //etEntrada2.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
 
-        etEntrada1.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        etEntrada2.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        //etEntrada1.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        //etEntrada2.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
     }
 
@@ -513,7 +801,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(esNumero(etEntrada1.getText().toString()) && esNumero(etEntrada2.getText().toString())) {
+                /*if(esNumero(etEntrada1.getText().toString()) && esNumero(etEntrada2.getText().toString())) {
                     disponibles_entrada1 = Integer.valueOf(etEntrada1.getText().toString());
                     disponibles_entrada2 = Integer.valueOf(etEntrada2.getText().toString());
                     Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
@@ -521,7 +809,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                     dialog.dismiss();
                 }else{
                     Toast.makeText(getActivity(), "Solo se permiten numeros", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         };
     }

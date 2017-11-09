@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        int id_entrada = 426806; //426806 Mio Gratis //425960 Cuco de pago -> para pruebas
+        int id_entrada = 426806; //426806 Gratis //425960 de pago -> para pruebas
         fragment = null;
         esconderItemsActionMenu();
         if (id == R.id.nav_perfil) {
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
                 }
             };
             cargarEventoById(id_entrada, setEventoPerfilExperiencia);
-            amiMegaphone.setVisible(true);
+            //amiMegaphone.setVisible(true);
             amiAnunciate.setVisible(true);
         } else if (id == R.id.nav_escaner_qr) {
             fragment = new Escanear();
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
                 }
             };
             cargarEventoById(id_entrada, setEventoEscanear);
-            amiBuscar.setVisible(true);
+            //amiBuscar.setVisible(true);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

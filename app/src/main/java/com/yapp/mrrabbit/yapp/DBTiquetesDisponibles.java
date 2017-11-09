@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 
@@ -19,17 +18,18 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "DBTiquetesDisponibles.db";
 
-    public static final String TABLA_NOMBRES = "Tiquetes";
+    public static final String TABLA_TIQUETES = "Tiquetes";
     public static final String COLUMNA_ID = "id";
     public static final String COLUMNA_ID_TIQUETE = "idTiquete";
     public static final String COLUMNA_TIPO_TIQUETE = "tipoTiquete";
     public static final String COLUMNA_CODIGO_QR = "codigoQR";
     public static final String COLUMNA_CANJEADA = "canjeada";
     public static final String COLUMNA_SINCRNIZADO = "sincronizado";
+    public Context contextoDB;
 
 
     private static final String SQL_CREAR  = "create table "
-            + TABLA_NOMBRES + "(" + COLUMNA_ID
+            + TABLA_TIQUETES + "(" + COLUMNA_ID
             + " integer primary key autoincrement, "+ COLUMNA_ID_TIQUETE +" integer not null, "+ COLUMNA_TIPO_TIQUETE +" text not null,"
             + COLUMNA_CODIGO_QR +" text not null,"+ COLUMNA_CANJEADA +" int not null,"
             + COLUMNA_SINCRNIZADO +" int not null);";
@@ -41,9 +41,9 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public DBTiquetesDisponibles(Context context, int idEvento) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.idEvento = idEvento;
+        this.contextoDB = context;
         if(idEvento!=getIdEventoDB()){
-            eliminarBaseDatos(context);
-            ingresarIdEvento(idEvento);
+            eliminarBaseDatos();
         }
     }
 
@@ -71,13 +71,14 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
 
         long newRowId;
 
-        newRowId = db.insert(TABLA_NOMBRES, null,values);
+        newRowId = db.insert(TABLA_TIQUETES, null,values);
         db.close();
         return (int) newRowId;
     }
 
-    public void eliminarBaseDatos(Context contextoDB){
+    public void eliminarBaseDatos(){
         contextoDB.deleteDatabase(DATABASE_NAME);
+        ingresarIdEvento(idEvento);
     }
 
     private int ingresarIdEvento(int id){
@@ -122,7 +123,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
         String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO};
 
         Cursor cursor =
-                db.query(TABLA_NOMBRES,
+                db.query(TABLA_TIQUETES,
                         projection,
                         " "+COLUMNA_CODIGO_QR+" = ?",
                         new String[] { qrResult },
@@ -146,7 +147,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
         String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO};
 
         Cursor cursor =
-                db.query(TABLA_NOMBRES,
+                db.query(TABLA_TIQUETES,
                         projection,
                         null,
                         null,
@@ -176,7 +177,25 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
 
         int i = -1;
 
-        i = db.update(TABLA_NOMBRES,
+        i = db.update(TABLA_TIQUETES,
+                values,
+                " "+COLUMNA_ID_TIQUETE+" = ?",
+                new String[] { String.valueOf( idtiquete ) });
+        db.close();
+
+        return i;
+    }
+
+    public int setSincronizado (int idtiquete){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMNA_SINCRNIZADO, 1);
+
+        int i = -1;
+
+        i = db.update(TABLA_TIQUETES,
                 values,
                 " "+COLUMNA_ID_TIQUETE+" = ?",
                 new String[] { String.valueOf( idtiquete ) });

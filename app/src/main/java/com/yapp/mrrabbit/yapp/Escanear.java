@@ -53,6 +53,8 @@ public class Escanear extends Fragment implements View.OnClickListener {
     private OnFragmentInteractionListener mListener;
     private String escanerSeleccionado;
 
+    private DBTiquetesDisponibles dbtd;
+
     private Context contextoEscaner;
 
     public Escanear() {
@@ -107,11 +109,14 @@ public class Escanear extends Fragment implements View.OnClickListener {
         switch (id){
             case R.id.fe_bt_sincronizar:
                 getTiquetesDisponiblesEvento();
-                sincronizar.setBackgroundResource(R.drawable.raduis_button_green);
-                sincronizar.setText("Actualizar");
+                habilitarEscaneo();
                 break;
         }
+    }
 
+    public void habilitarEscaneo(){
+        sincronizar.setBackgroundResource(R.drawable.raduis_button_green);
+        sincronizar.setText("Actualizar");
     }
 
     private void getTiquetesDisponiblesEvento() {
@@ -119,11 +124,17 @@ public class Escanear extends Fragment implements View.OnClickListener {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                cargarCambiosAlServidor();
                 DataAccess da = new DataAccess();
                 evento.setTiquetesEvento(da.getTiquetesEvento(evento.getIdEvento()));
-                guardarTiquetesDisponiblesBD();
+                if(evento.getTiquetesEvento()!=null && !evento.getTiquetesEvento().isEmpty()) {
+                    guardarTiquetesDisponiblesBD();
+                    showToastFromOtherThread("Sincronizacion exitosa! Yapp puede escanear!");
+                    habilitarEscaneoFromOtherThread();
+                }else{
+                    showToastFromOtherThread("Ups algo salio mal, intente de nuevo mas tarde");
+                }
                 dismissLoading();
-                showToastFromOtherThread("Sincronizacion exitosa! Ya puede escanear!");
                 Thread.currentThread().interrupt();
             }
         });
@@ -144,6 +155,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
         cargarElementosVisuales();
         cargarInfomacionEvento();
         cargarBotenesTiquetes();
+        cargarTiquetesFromDB();
     }
 
     private void cargarElementosVisuales() {
@@ -162,6 +174,20 @@ public class Escanear extends Fragment implements View.OnClickListener {
             tv_tiquets_escaneados.setText(String.valueOf(evento.getTotalTiquetesEscaneados()));
             tv_tiquets_vendidos.setText(String.valueOf(evento.getTotalTiquetesVendidos()));
             tv_actualizado.setText("Actualizado: "+DataAccess.getCurrentTime()+" - "+DataAccess.getCurrentDate("dd/MM/yyyy"));
+        }
+    }
+
+    public void cargarCambiosAlServidor(){
+        if(tiquetesBDLocal!=null) {
+            for (Tiquete tiqueteTemp : tiquetesBDLocal) {
+                if (tiqueteTemp.isCanjeada() && !tiqueteTemp.isSincronizada()) {
+                    DataAccess da = new DataAccess();
+                    if(da.subirTiuetesEscaneadosAlServidor(tiqueteTemp.getCodigoQR())){
+                        showToastFromOtherThread("tiquete canjeado subido al servidor");
+                        dbtd.setSincronizado(tiqueteTemp.getIdTiquete());
+                    }
+                }
+            }
         }
     }
 
@@ -230,21 +256,30 @@ public class Escanear extends Fragment implements View.OnClickListener {
         if(result != null) {
             String resultadoQR = result.getContents();
             if(resultadoQR!=null){
+                resultadoQR = getCodeOfUrl(resultadoQR);
                 Tiquete tiqueteEscaneado = null;
-                DBTiquetesDisponibles dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
+                //dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
                 tiqueteEscaneado = dbtd.obtenerTiqueteByQR(resultadoQR);
                 if(tiqueteEscaneado!=null){
                     definirAccionTiqueteEscaneado(tiqueteEscaneado, dbtd);
+                }else{
+                    desplegarMensaje("El codigo no corresponde a una entrada!");
                 }
             }
         }
 
     }
 
+    public String getCodeOfUrl(String url){
+        String code = url.substring(url.lastIndexOf("codigo=")+7);
+        return code;
+    }//http://yappdevelopers.com/boleteria/?codigo=rq2SpqKY
+
     public void definirAccionTiqueteEscaneado(Tiquete tiquete, DBTiquetesDisponibles dbtd){
         if(!tiquete.isCanjeada()) {
             if (escanerSeleccionado.equals("Todos los tipos") || tiquete.getTipoTiquete().equals(escanerSeleccionado)) {
                 if (dbtd.setCanjeado(tiquete.getIdTiquete()) > 0) {
+                    cargarTiquetesFromDB();
                     desplegarMensaje("Tiquete Valido y canjeado");
                 } else {
                     desplegarMensaje("Error al canjear el tiquete");
@@ -293,22 +328,42 @@ public class Escanear extends Fragment implements View.OnClickListener {
     }
 
     public boolean guardarTiquetesDisponiblesBD(){
-            DBTiquetesDisponibles dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
-            tiquetesBDLocal = dbtd.obtenerTodos();
             if(tiquetesBDLocal.isEmpty()) {
                 for (Tiquete tiquete : evento.getTiquetesEvento()) {
                     dbtd.agregar(tiquete);
                 }
+                cargarTiquetesFromDB();
             }else{
-
+                tiquetesBDLocal.clear();
+                //dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
+                dbtd.eliminarBaseDatos();
+                guardarTiquetesDisponiblesBD();
             }
             return true;
+    }
+
+    public void cargarTiquetesFromDB(){
+        if(dbtd==null) {
+            dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
+        }
+        tiquetesBDLocal = dbtd.obtenerTodos();
+        if(!tiquetesBDLocal.isEmpty()) {
+            habilitarEscaneoFromOtherThread();
+        }
     }
 
     public void showToastFromOtherThread(final String mensaje){
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void habilitarEscaneoFromOtherThread(){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                habilitarEscaneo();
             }
         });
     }
