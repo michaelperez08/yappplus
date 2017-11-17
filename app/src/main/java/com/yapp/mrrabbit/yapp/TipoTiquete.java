@@ -6,7 +6,7 @@ package com.yapp.mrrabbit.yapp;
 
 public class TipoTiquete {
 
-    private String nombre;
+    private String nombre, mensaje;
     private int idTiquete;
     private int tiquetesTotales, tiquetesVendidos, tiquetesDisponibles, tiquetesEscaneados, tiquetesCortesia;
     private double dineroSubtotal, dineroComisionYapp, dineroComisionBanco;
@@ -14,7 +14,7 @@ public class TipoTiquete {
     private double dineroOrganizador;
 
     public TipoTiquete(String nombre, int idTiquete, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesia, double dineroSubtotal, double dineroComisionYapp,
-                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador) {
+                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje) {
         this.nombre = nombre;
         this.idTiquete = idTiquete;
         this.tiquetesTotales = tiquetesTotales;
@@ -28,10 +28,11 @@ public class TipoTiquete {
         this.porcentageComisionYapp = porcentageComisionYapp;
         this.porcentageComisionBanco = porcentageComisionBanco;
         this.dineroOrganizador = dineroOrganizador;
+        this.mensaje = mensaje;
     }
 
     public TipoTiquete(String nombre, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesia, double dineroSubtotal, double dineroComisionYapp,
-                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador) {
+                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje) {
         this.nombre = nombre;
         this.tiquetesTotales = tiquetesTotales;
         this.tiquetesVendidos = tiquetesVendidos;
@@ -44,6 +45,7 @@ public class TipoTiquete {
         this.porcentageComisionYapp = porcentageComisionYapp;
         this.porcentageComisionBanco = porcentageComisionBanco;
         this.dineroOrganizador = dineroOrganizador;
+        this.mensaje = mensaje;
     }
 
     public String getNombre() {
@@ -148,5 +150,13 @@ public class TipoTiquete {
 
     public void setDineroOrganizador(double dineroOrganizador) {
         this.dineroOrganizador = dineroOrganizador;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
 }

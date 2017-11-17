@@ -23,16 +23,22 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public static final String COLUMNA_ID_TIQUETE = "idTiquete";
     public static final String COLUMNA_TIPO_TIQUETE = "tipoTiquete";
     public static final String COLUMNA_CODIGO_QR = "codigoQR";
+    public static final String COLUMNA_FECHA_ESCANEADO = "fechaEscaneado";
+    public static final String COLUMNA_NOMBRE_COMPRADOR = "nombreComprador";
     public static final String COLUMNA_CANJEADA = "canjeada";
     public static final String COLUMNA_SINCRNIZADO = "sincronizado";
     public Context contextoDB;
 
 
     private static final String SQL_CREAR  = "create table "
-            + TABLA_TIQUETES + "(" + COLUMNA_ID
-            + " integer primary key autoincrement, "+ COLUMNA_ID_TIQUETE +" integer not null, "+ COLUMNA_TIPO_TIQUETE +" text not null,"
-            + COLUMNA_CODIGO_QR +" text not null,"+ COLUMNA_CANJEADA +" int not null,"
-            + COLUMNA_SINCRNIZADO +" int not null);";
+            + TABLA_TIQUETES + "(" + COLUMNA_ID + " integer primary key autoincrement, "
+            + COLUMNA_ID_TIQUETE +" integer not null, "
+            + COLUMNA_TIPO_TIQUETE +" text not null,"
+            + COLUMNA_CODIGO_QR +" text not null,"
+            + COLUMNA_CANJEADA +" int not null,"
+            + COLUMNA_SINCRNIZADO +" int not null,"
+            + COLUMNA_FECHA_ESCANEADO +" text not null,"
+            + COLUMNA_NOMBRE_COMPRADOR +" text not null);";
 
     private static final String SQL_CREAR_TABLA_ID_EVENTO = "create table IdEventos (idEvento integer primary key not null);";
 
@@ -68,6 +74,8 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
         values.put(COLUMNA_CODIGO_QR, tiquete.getCodigoQR());
         values.put(COLUMNA_CANJEADA, tiquete.isCanjeada());
         values.put(COLUMNA_SINCRNIZADO, tiquete.isSincronizada());
+        values.put(COLUMNA_FECHA_ESCANEADO, tiquete.getFechaEscaneo());
+        values.put(COLUMNA_NOMBRE_COMPRADOR, tiquete.getNombreComprador());
 
         long newRowId;
 
@@ -120,7 +128,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public Tiquete obtenerTiqueteByQR(String qrResult){
         Tiquete escaneado = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO};
+        String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO, COLUMNA_FECHA_ESCANEADO, COLUMNA_NOMBRE_COMPRADOR};
 
         Cursor cursor =
                 db.query(TABLA_TIQUETES,
@@ -135,7 +143,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.getCount()>0) {
             cursor.moveToFirst();
-            escaneado = new Tiquete(cursor.getInt(1), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4) == 1, cursor.getInt(5) == 1);
+            escaneado = new Tiquete(cursor.getInt(1), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4) == 1, cursor.getInt(5) == 1, cursor.getString(6), cursor.getString(7));
         }
         db.close();
         return escaneado;
@@ -144,7 +152,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public ArrayList<Tiquete> obtenerTodos(){
         ArrayList<Tiquete> tiquetes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO};
+        String[] projection = {COLUMNA_ID, COLUMNA_ID_TIQUETE, COLUMNA_TIPO_TIQUETE, COLUMNA_CODIGO_QR, COLUMNA_CANJEADA, COLUMNA_SINCRNIZADO, COLUMNA_FECHA_ESCANEADO, COLUMNA_NOMBRE_COMPRADOR};
 
         Cursor cursor =
                 db.query(TABLA_TIQUETES,
@@ -160,7 +168,7 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
         if (cursor != null && cursor.getCount()>0) {
             cursor.moveToFirst();
             do{
-                tiquetes.add(new Tiquete(cursor.getInt(1), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4) == 1, cursor.getInt(5) == 1));
+                tiquetes.add(new Tiquete(cursor.getInt(1), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4) == 1, cursor.getInt(5) == 1, cursor.getString(6), cursor.getString(7)));
             }while(cursor.moveToNext());
         }
 

@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Layout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -58,14 +55,17 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private View dialogView;
     private boolean excel_enviado;
 
+    private ArrayList<EditText> lista_ed_entradasDisponibles;
+    private ArrayList<EditText> lista_ed_mensajeEntrada;
+    private int sumEntradasDisponibles;
+    private String parametrosURLPausarVenta;
+
     private EditText etEntrada1;
     private EditText etEntrada2;
 
     private boolean ventaPausada;
 
     private ProgressDialog progress;
-
-    private int disponibles_entrada1, disponibles_entrada2;
 
     private Evento eventoPerfil;
 
@@ -129,6 +129,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         switch (id){
             case R.id.fpe_bt_escanear:
                 fragment = new Escanear();
+                ((Escanear)fragment).setEvento(eventoPerfil);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction().replace(R.id.main_content, fragment).commit();
                 ((MainActivity)getActivity()).esconderItemsActionMenu();
@@ -138,7 +139,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 cargarDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
                 getInfluencersPorEvento();
                 excel_enviado = false;
-                bt_accion_dialog.setOnClickListener(enviar_excel("send_report"));
+                bt_accion_dialog.setOnClickListener(enviar_excel("referral_report"));
                 break;
             case R.id.ib_reporte_financiero:
                 cargarDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, R.id.bt_solcitar_adelanto);
@@ -153,7 +154,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 break;
             case R.id.ib_pausar_venta:
                 cargarDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
-                cargarElementosPausarVenta();
                 desplegarPopUpPausarVentas();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
                 break;
@@ -281,8 +281,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         super.onViewCreated(view, savedInstanceState);
         eventoPerfil = MainActivity.evento;
         cargarElemntosVisuales();
-        disponibles_entrada1 = 0;
-        disponibles_entrada2 = 0;
         hayTiquetesDisponibles();
         if(eventoPerfil!=null){
             cargarEventoPerfil();
@@ -519,6 +517,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
         set.connect(R.id.tv_subtotal, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
         set.applyTo(layout);
+
+        if(recibiras<1000){
+            ((Button)dialogView.findViewById(R.id.bt_solcitar_adelanto)).setVisibility(View.INVISIBLE);
+        }
     }
 
     public void cargarReporte(){
@@ -662,13 +664,16 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         int size = eventoPerfil.getTipoTiquetes().size();
 
         TipoTiquete tipoTemp = null;
+        lista_ed_entradasDisponibles = new ArrayList<>();
+        lista_ed_mensajeEntrada = new ArrayList<>();
+
         for (int i = 1; i <= size; i++) {
             tipoTemp = eventoPerfil.getTipoTiquetes().get(i-1);
 
             TextView tv_nombre_entrada = new TextView(getActivity());
             tv_nombre_entrada.setId(i);
             tv_nombre_entrada.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            tv_nombre_entrada.setTextColor(Color.parseColor("#cfcfcf"));
+            tv_nombre_entrada.setTextColor(Color.DKGRAY);
             tv_nombre_entrada.setTextSize(20);
             tv_nombre_entrada.setGravity(Gravity.CENTER);
             tv_nombre_entrada.setText(tipoTemp.getNombre());
@@ -678,12 +683,15 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             et_disponibles.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
             et_disponibles.setBackgroundResource(R.drawable.radius_border);
             et_disponibles.setText(String.valueOf(tipoTemp.getTiquetesDisponibles()));
-            et_disponibles.setGravity(Gravity.CENTER);
+            et_disponibles.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
             //et_disponibles.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             et_disponibles.setTextSize(20);
             et_disponibles.setTextColor(Color.BLACK);
             et_disponibles.setTypeface(null, Typeface.BOLD);
-            et_disponibles.setInputType(InputType.TYPE_CLASS_NUMBER);
+            et_disponibles.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            et_disponibles.setSelection(et_disponibles.getText().length());
+            et_disponibles.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
+            lista_ed_entradasDisponibles.add(et_disponibles);
 
             TextView tv_texto_disponibles = new TextView(getActivity());
             tv_texto_disponibles.setId((size*2)+i);
@@ -694,12 +702,14 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
             EditText et_mensaje = new EditText(getActivity());
             et_mensaje.setId((size*3)+i);
-            et_mensaje.setLayoutParams(new ConstraintLayout.LayoutParams(440, 65));
+            et_mensaje.setLayoutParams(new ConstraintLayout.LayoutParams(440, 60));
             et_mensaje.setTextSize(16);
-            et_mensaje.setGravity(Gravity.CENTER);
+            et_mensaje.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
             et_mensaje.setTextColor(Color.BLACK);
             et_mensaje.setBackgroundResource(R.drawable.black_border);
-            et_mensaje.setText("Entradas Agotadas"); //pendiente
+            et_mensaje.setText(tipoTemp.getMensaje());
+            et_mensaje.setPadding(0,5,0,0);
+            lista_ed_mensajeEntrada.add(et_mensaje);
 
             TextView tv_texto_mensaje_clientes = new TextView(getActivity());
             tv_texto_mensaje_clientes.setId((size*4)+i);
@@ -769,26 +779,8 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void cargarElementosPausarVenta(){
-        //etEntrada1 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_1);
-        //etEntrada2 = (EditText) dialogView.findViewById(R.id.et_disponibles_te_2);
-
-       // etEntrada1.setText(String.valueOf(disponibles_entrada1));
-        //etEntrada2.setText(String.valueOf(disponibles_entrada2));
-
-        //etEntrada1.setSelection(etEntrada1.getText().length());
-        //etEntrada2.setSelection(etEntrada2.getText().length());
-
-        //etEntrada1.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
-        //etEntrada2.setFilters(new InputFilter[] {new InputFilter.LengthFilter(5)});
-
-        //etEntrada1.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        //etEntrada2.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
-    }
-
     public void hayTiquetesDisponibles(){
-        if((disponibles_entrada1+disponibles_entrada2)>0){
+        if(sumEntradasDisponibles>0){
             ibt_pausar_venta.setImageResource(R.mipmap.ic_pause);
             tv_pausarVenta.setText("Pausar Venta");
         }else{
@@ -801,17 +793,27 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if(esNumero(etEntrada1.getText().toString()) && esNumero(etEntrada2.getText().toString())) {
-                    disponibles_entrada1 = Integer.valueOf(etEntrada1.getText().toString());
-                    disponibles_entrada2 = Integer.valueOf(etEntrada2.getText().toString());
+                if(validarFomratoCorrectoEntradasDisponibles()) {
                     Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
                     hayTiquetesDisponibles();
                     dialog.dismiss();
                 }else{
                     Toast.makeText(getActivity(), "Solo se permiten numeros", Toast.LENGTH_SHORT).show();
-                }*/
+                }
             }
         };
+    }
+
+    public boolean validarFomratoCorrectoEntradasDisponibles(){
+        sumEntradasDisponibles = 0;
+        for (EditText et_temp : lista_ed_entradasDisponibles){
+            if(esNumero(et_temp.getText().toString())){
+                sumEntradasDisponibles+=Integer.parseInt(et_temp.getText().toString());
+            }else{
+                return false;
+            }
+        }
+        return true;
     }
 
     private View.OnClickListener solicitarAdelanto() {
@@ -832,6 +834,14 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 }
             }
         };
+    }
+
+    public void genrarParametrosURLPausarVenta(int[] cantidades, String[] mensajes){
+        parametrosURLPausarVenta = "";
+        for (int i=0; i<eventoPerfil.getTipoTiquetes().size(); i++) {
+            TipoTiquete temp_tipoTiquete = eventoPerfil.getTipoTiquetes().get(i);
+            parametrosURLPausarVenta += eventoPerfil.getTipoTiquetes().get(i).getIdTiquete()+":"+cantidades[i]+":"+mensajes[i]+"|";
+        }
     }
 
     public void abrirWebView(String url){

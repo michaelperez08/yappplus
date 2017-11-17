@@ -7,16 +7,18 @@ package com.yapp.mrrabbit.yapp;
 public class Tiquete {
 
     private int idTiquete, idCompra;
-    private String tipoTiquete, codigoQR;
+    private String tipoTiquete, codigoQR, fechaEscaneo, nombreComprador;
     private boolean canjeada, sincronizada;
 
-    public Tiquete(int idTiquete, int idCompra, String tipoTiquete, String codigoQR, boolean canjeada, boolean sincronizada) {
+    public Tiquete(int idTiquete, int idCompra, String tipoTiquete, String codigoQR, boolean canjeada, boolean sincronizada, String fechaEscaneo, String nombreComprador) {
         this.idTiquete = idTiquete;
         this.idCompra = idCompra;
         this.tipoTiquete = tipoTiquete;
         this.codigoQR = codigoQR;
         this.canjeada = canjeada;
         this.sincronizada = sincronizada;
+        this.fechaEscaneo = fechaEscaneo;
+        this.nombreComprador = nombreComprador;
     }
 
     public Tiquete() {
@@ -68,5 +70,21 @@ public class Tiquete {
 
     public void setCanjeada(boolean canjeada) {
         this.canjeada = canjeada;
+    }
+
+    public String getFechaEscaneo() {
+        return fechaEscaneo;
+    }
+
+    public void setFechaEscaneo(String fechaEscaneo) {
+        this.fechaEscaneo = fechaEscaneo;
+    }
+
+    public String getNombreComprador() {
+        return nombreComprador;
+    }
+
+    public void setNombreComprador(String nombreComprador) {
+        this.nombreComprador = nombreComprador;
     }
 }

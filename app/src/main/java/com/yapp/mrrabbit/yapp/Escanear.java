@@ -5,24 +5,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 
@@ -54,6 +59,19 @@ public class Escanear extends Fragment implements View.OnClickListener {
     private String escanerSeleccionado;
 
     private DBTiquetesDisponibles dbtd;
+    private int tiquetesEscaneados;
+
+    private View dialogView;
+    private AlertDialog dialog;
+    private Button btSalirDialogResultScann;
+    private Button btContinuarDialogResultScann;
+    private TextView tvMensajePrincipalDialogResultScann;
+    private TextView tvMensajeSecundarioDialogResultScann;
+    private TextView tvFechaHoraDialogResultScann;
+    private TextView tvTipoEntradaDialogResultScann;
+    private TextView tvNombreDialogResultScann;
+    private View viewDialogResultScann;
+    private ImageView ivIcDialogResultScann;
 
     private Context contextoEscaner;
 
@@ -114,6 +132,11 @@ public class Escanear extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     public void habilitarEscaneo(){
         sincronizar.setBackgroundResource(R.drawable.raduis_button_green);
         sincronizar.setText("Actualizar");
@@ -129,7 +152,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
                 evento.setTiquetesEvento(da.getTiquetesEvento(evento.getIdEvento()));
                 if(evento.getTiquetesEvento()!=null && !evento.getTiquetesEvento().isEmpty()) {
                     guardarTiquetesDisponiblesBD();
-                    showToastFromOtherThread("Sincronizacion exitosa! Yapp puede escanear!");
+                    showToastFromOtherThread("Sincronización exitosa! Yapp puede escanear!");
                     habilitarEscaneoFromOtherThread();
                 }else{
                     showToastFromOtherThread("Ups algo salio mal, intente de nuevo mas tarde");
@@ -150,12 +173,12 @@ public class Escanear extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        evento = MainActivity.evento;
         contextoEscaner = getActivity().getApplicationContext();
         cargarElementosVisuales();
         cargarInfomacionEvento();
         cargarBotenesTiquetes();
         cargarTiquetesFromDB();
+        cargarVendidosYEscaneados();
     }
 
     private void cargarElementosVisuales() {
@@ -166,7 +189,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
         tv_actualizado = (TextView) getActivity().findViewById(R.id.tv_actualizado_escanear);
 
         sincronizar.setOnClickListener(this);
-        bt_todos_tipos_escanear.setOnClickListener(abrirEscanner());
+        bt_todos_tipos_escanear.setOnClickListener(abrirEscanner(false));
     }
 
     public void cargarInfomacionEvento(){
@@ -209,7 +232,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
                 botonEscanear.setTextColor(Color.WHITE);
                 botonEscanear.setTextSize(12);
 
-                botonEscanear.setOnClickListener(abrirEscanner());
+                botonEscanear.setOnClickListener(abrirEscanner(false));
 
                 layout.addView(botonEscanear, 0);
                 set.clone(layout);
@@ -229,7 +252,10 @@ public class Escanear extends Fragment implements View.OnClickListener {
         }
     }
 
-    public View.OnClickListener abrirEscanner(){
+    public View.OnClickListener abrirEscanner(boolean nuevoDialogo){
+        if(nuevoDialogo && dialog!=null){
+                dialog.dismiss();
+        }
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,7 +289,8 @@ public class Escanear extends Fragment implements View.OnClickListener {
                 if(tiqueteEscaneado!=null){
                     definirAccionTiqueteEscaneado(tiqueteEscaneado, dbtd);
                 }else{
-                    desplegarMensaje("El codigo no corresponde a una entrada!");
+                    //desplegarMensaje("El codigo no corresponde a una entrada!");
+                    cargarDialogoResultadoEscanner(null, 0);
                 }
             }
         }
@@ -280,16 +307,47 @@ public class Escanear extends Fragment implements View.OnClickListener {
             if (escanerSeleccionado.equals("Todos los tipos") || tiquete.getTipoTiquete().equals(escanerSeleccionado)) {
                 if (dbtd.setCanjeado(tiquete.getIdTiquete()) > 0) {
                     cargarTiquetesFromDB();
-                    desplegarMensaje("Tiquete Valido y canjeado");
+                    cargarVendidosYEscaneados();
+                    cargarDialogoResultadoEscanner(tiquete, 1);
+                    //desplegarMensaje("Tiquete Valido y canjeado");
                 } else {
                     desplegarMensaje("Error al canjear el tiquete");
                 }
             } else {
-                desplegarMensaje("El tipo de tiquete no coicide con el escaner seleccionado");
+                //desplegarMensaje("El tipo de tiquete no coicide con el escaner seleccionado");
+                cargarDialogoResultadoEscanner(tiquete, 0);
             }
         }else{
-            desplegarMensaje("El tiquete ya ha sido conjeado");
+            //desplegarMensaje("El tiquete ya ha sido conjeado");
+            cargarDialogoResultadoEscanner(tiquete, -1);
         }
+    }
+
+    public void cargarVendidosYEscaneados(){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if(evento!=null){
+                    tv_tiquets_vendidos.setText(String.valueOf(evento.getTotalTiquetesVendidos()));
+                    tv_tiquets_escaneados.setText(String.valueOf(getCantidadTiquetesEscaneadosLocal()));
+                }
+            }
+        });
+    }
+
+    public int getCantidadTiquetesEscaneadosLocal(){
+        tiquetesEscaneados = 0;
+        ArrayList<Tiquete> listaAContar;
+        if(tiquetesBDLocal!=null){
+            listaAContar = tiquetesBDLocal;
+        }else{
+            listaAContar = evento.getTiquetesEvento();
+        }
+        for (Tiquete tiquete: listaAContar){
+            if(tiquete.isCanjeada()){
+                tiquetesEscaneados++;
+            }
+        }
+        return tiquetesEscaneados;
     }
 
     public void displayDialogLoading(){
@@ -328,22 +386,22 @@ public class Escanear extends Fragment implements View.OnClickListener {
     }
 
     public boolean guardarTiquetesDisponiblesBD(){
-            if(tiquetesBDLocal.isEmpty()) {
-                for (Tiquete tiquete : evento.getTiquetesEvento()) {
-                    dbtd.agregar(tiquete);
-                }
-                cargarTiquetesFromDB();
-            }else{
-                tiquetesBDLocal.clear();
-                //dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
-                dbtd.eliminarBaseDatos();
-                guardarTiquetesDisponiblesBD();
+        if(tiquetesBDLocal.isEmpty()) {
+            for (Tiquete tiquete : evento.getTiquetesEvento()) {
+                dbtd.agregar(tiquete);
             }
-            return true;
+            cargarTiquetesFromDB();
+            cargarVendidosYEscaneados();
+        }else{
+            tiquetesBDLocal.clear();
+            dbtd.eliminarBaseDatos();
+            guardarTiquetesDisponiblesBD();
+        }
+        return true;
     }
 
     public void cargarTiquetesFromDB(){
-        if(dbtd==null) {
+        if(dbtd==null && evento!=null) {
             dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
         }
         tiquetesBDLocal = dbtd.obtenerTodos();
@@ -370,6 +428,76 @@ public class Escanear extends Fragment implements View.OnClickListener {
 
     public void desplegarMensaje(String mensaje){
         Toast.makeText(contextoEscaner, mensaje, Toast.LENGTH_LONG).show();
+    }
+
+    public void cargarDialogoResultadoEscanner(Tiquete tiquete, int resultado){ //0 no es un tiquete o no pertenece a escaneer, 1 tiquete escaneado exitosamente, -1 tiquete que ya ha sido escaneado posteriormente
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder((MainActivity)getActivity());
+        dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_result_scann, null);
+
+        tvMensajePrincipalDialogResultScann = (TextView) dialogView.findViewById(R.id.id_mensaje_principal);
+        tvMensajeSecundarioDialogResultScann = (TextView) dialogView.findViewById(R.id.id_mensaje_secundario);
+        tvFechaHoraDialogResultScann = (TextView) dialogView.findViewById(R.id.id_fechahora_escaneado);
+        tvTipoEntradaDialogResultScann = (TextView) dialogView.findViewById(R.id.id_tipoEntrada);
+        tvNombreDialogResultScann = (TextView) dialogView.findViewById(R.id.id_nombreComprador);
+        viewDialogResultScann = (View) dialogView.findViewById(R.id.id_view_rd);
+        ivIcDialogResultScann = (ImageView) dialogView.findViewById(R.id.id_ic_dialog_result);
+
+        btContinuarDialogResultScann = (Button) dialogView.findViewById(R.id.id_bt_continuar);
+        btSalirDialogResultScann = (Button) dialogView.findViewById(R.id.id_bt_salir);
+
+        btSalirDialogResultScann.setOnClickListener(cerrarDialogo());
+        btContinuarDialogResultScann.setOnClickListener(abrirEscanner(true));
+
+        String mensajeNoTiqueteNoEscaner = "No es un tiquete";
+
+        if(tiquete!=null){
+            try {
+                tvFechaHoraDialogResultScann.setText(DataAccess.formatearFechaDialogoEscaner(tiquete.getFechaEscaneo()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            tvNombreDialogResultScann.setText(tiquete.getNombreComprador());
+            tvTipoEntradaDialogResultScann.setText(tiquete.getTipoTiquete());
+            mensajeNoTiqueteNoEscaner = "Bloque incorrecto";
+        }
+        tvMensajeSecundarioDialogResultScann.setVisibility(View.INVISIBLE);
+        switch (resultado){
+            case -1: // -1 tiquete que ya ha sido escaneado posteriormente
+                viewDialogResultScann.setBackgroundColor(Color.parseColor("#e50000"));
+                tvMensajePrincipalDialogResultScann.setText("Ya Ha Sido Escaneado");
+                ivIcDialogResultScann.setBackgroundResource(R.drawable.cancel);
+                break;
+
+            case 0: //0 no es un tiquete o no pertenece a escaneer
+                viewDialogResultScann.setBackgroundColor(Color.parseColor("#e50000"));
+                tvMensajePrincipalDialogResultScann.setText(mensajeNoTiqueteNoEscaner);
+                ivIcDialogResultScann.setBackgroundResource(R.drawable.cancel);
+                tvFechaHoraDialogResultScann.setVisibility(View.INVISIBLE);
+                tvNombreDialogResultScann.setVisibility(View.INVISIBLE);
+                tvTipoEntradaDialogResultScann.setVisibility(View.INVISIBLE);
+
+                break;
+
+            case 1: //1 tiquete escaneado exitosamente
+
+                break;
+
+        }
+
+        mBuilder.setView(dialogView);
+        dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    public View.OnClickListener cerrarDialogo(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dialog!=null) {
+                    dialog.dismiss();
+                }
+            }
+        };
     }
 
 }
