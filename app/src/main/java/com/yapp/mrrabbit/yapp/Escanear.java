@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -132,10 +133,6 @@ public class Escanear extends Fragment implements View.OnClickListener {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     public void habilitarEscaneo(){
         sincronizar.setBackgroundResource(R.drawable.raduis_button_green);
@@ -174,6 +171,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         contextoEscaner = getActivity().getApplicationContext();
+        checkEvento();
         cargarElementosVisuales();
         cargarInfomacionEvento();
         cargarBotenesTiquetes();
@@ -205,8 +203,8 @@ public class Escanear extends Fragment implements View.OnClickListener {
             for (Tiquete tiqueteTemp : tiquetesBDLocal) {
                 if (tiqueteTemp.isCanjeada() && !tiqueteTemp.isSincronizada()) {
                     DataAccess da = new DataAccess();
-                    if(da.subirTiuetesEscaneadosAlServidor(tiqueteTemp.getCodigoQR())){
-                        showToastFromOtherThread("tiquete canjeado subido al servidor");
+                    if(da.subirTiuetesEscaneadosAlServidor(tiqueteTemp.getCodigoQR(), tiqueteTemp.getFechaEscaneo())){
+                        //showToastFromOtherThread("tiquete canjeado subido al servidor");
                         dbtd.setSincronizado(tiqueteTemp.getIdTiquete());
                     }
                 }
@@ -267,6 +265,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
                     qrScan.setCameraId(0);
                     qrScan.setBeepEnabled(false);
                     qrScan.setBarcodeImageEnabled(false);
+                    qrScan.setOrientationLocked(false);
                     qrScan.initiateScan();
                 }else{
                     Toast.makeText(contextoEscaner, "Debe sincronizar antes de escanear", Toast.LENGTH_LONG).show();
@@ -284,12 +283,10 @@ public class Escanear extends Fragment implements View.OnClickListener {
             if(resultadoQR!=null){
                 resultadoQR = getCodeOfUrl(resultadoQR);
                 Tiquete tiqueteEscaneado = null;
-                //dbtd = new DBTiquetesDisponibles(getActivity().getApplicationContext(), evento.getIdEvento());
                 tiqueteEscaneado = dbtd.obtenerTiqueteByQR(resultadoQR);
                 if(tiqueteEscaneado!=null){
                     definirAccionTiqueteEscaneado(tiqueteEscaneado, dbtd);
                 }else{
-                    //desplegarMensaje("El codigo no corresponde a una entrada!");
                     cargarDialogoResultadoEscanner(null, 0);
                 }
             }
@@ -306,19 +303,18 @@ public class Escanear extends Fragment implements View.OnClickListener {
         if(!tiquete.isCanjeada()) {
             if (escanerSeleccionado.equals("Todos los tipos") || tiquete.getTipoTiquete().equals(escanerSeleccionado)) {
                 if (dbtd.setCanjeado(tiquete.getIdTiquete()) > 0) {
+                    dbtd.setFechaEscaneado(tiquete.getIdTiquete());
+                    tiquete.setFechaEscaneo(DBTiquetesDisponibles.fechaEscaneao);
                     cargarTiquetesFromDB();
                     cargarVendidosYEscaneados();
                     cargarDialogoResultadoEscanner(tiquete, 1);
-                    //desplegarMensaje("Tiquete Valido y canjeado");
                 } else {
                     desplegarMensaje("Error al canjear el tiquete");
                 }
             } else {
-                //desplegarMensaje("El tipo de tiquete no coicide con el escaner seleccionado");
                 cargarDialogoResultadoEscanner(tiquete, 0);
             }
         }else{
-            //desplegarMensaje("El tiquete ya ha sido conjeado");
             cargarDialogoResultadoEscanner(tiquete, -1);
         }
     }
@@ -452,7 +448,9 @@ public class Escanear extends Fragment implements View.OnClickListener {
 
         if(tiquete!=null){
             try {
-                tvFechaHoraDialogResultScann.setText(DataAccess.formatearFechaDialogoEscaner(tiquete.getFechaEscaneo()));
+                if(!tiquete.getFechaEscaneo().equals("null")) {
+                    tvFechaHoraDialogResultScann.setText(DataAccess.formatearFechaDialogoEscaner(tiquete.getFechaEscaneo()));
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -468,7 +466,7 @@ public class Escanear extends Fragment implements View.OnClickListener {
                 ivIcDialogResultScann.setBackgroundResource(R.drawable.cancel);
                 break;
 
-            case 0: //0 no es un tiquete o no pertenece a escaneer
+            case 0: //0 no es un tiquete o no pertenece a bloquee
                 viewDialogResultScann.setBackgroundColor(Color.parseColor("#e50000"));
                 tvMensajePrincipalDialogResultScann.setText(mensajeNoTiqueteNoEscaner);
                 ivIcDialogResultScann.setBackgroundResource(R.drawable.cancel);
@@ -500,4 +498,20 @@ public class Escanear extends Fragment implements View.OnClickListener {
         };
     }
 
+    public void refrescarFragment(){
+        Fragment fragment = new Escanear();
+        ((Escanear)fragment).setEvento(MainActivity.evento);
+        //((Escanear)fragment).setDialogPendiente(true);
+        //((Escanear)fragment).setTiqueteDialogo(tiqueteDialogo);
+        evento = MainActivity.evento;
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.main_content, fragment).commit();
+        //((MainActivity)getActivity()).esconderItemsActionMenu();
+    }
+
+    public void checkEvento(){
+        if (evento == null) {
+            evento = MainActivity.evento;
+        }
+    }
 }

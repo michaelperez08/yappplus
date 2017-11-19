@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.yapp.mrrabbit.yapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -31,11 +32,16 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".WebViewActivity"
-            android:parentActivityName="com.yapp.mrrabbit.yapp.MainActivity">
+            android:parentActivityName="com.yapp.mrrabbit.yapp.MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yapp.mrrabbit.yapp.MainActivity" />
         </activity>
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
     </application>
 
 </manifest>

@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity
     private Menu actionMenu;
     public static Evento evento;
 
+
     private IntentIntegrator qrScan;
 
     //private MaterialSearchView searchView;
@@ -253,5 +254,6 @@ public class MainActivity extends AppCompatActivity
     public void setAmiBuscar(MenuItem amiBuscar) {
         this.amiBuscar = amiBuscar;
     }
+
 }
 

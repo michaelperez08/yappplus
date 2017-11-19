@@ -230,7 +230,7 @@ public class DataAccess {
         return succces;
     }
 
-    public boolean subirTiuetesEscaneadosAlServidor(String codigo){
+    public boolean subirTiuetesEscaneadosAlServidor(String codigo, String fecha){
         boolean enviado=false;
         ArrayList<Tiquete> tiquetes = null;
         String result = "";
@@ -239,7 +239,7 @@ public class DataAccess {
         String url = "https://yappexperience.com/boleteria_offline/escanear_entrada_offline_yappplus";
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
         map.add("id_entrada", codigo);
-        map.add("fecha_escaneo", getCurrentDate("yyyy-MM-dd HH:mm:ss"));
+        map.add("fecha_escaneo", fecha);
         HttpPostRequestTask hpt = new HttpPostRequestTask();
         hpt.setMap(map);
         try {

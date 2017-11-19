@@ -29,6 +29,8 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
     public static final String COLUMNA_SINCRNIZADO = "sincronizado";
     public Context contextoDB;
 
+    public static String fechaEscaneao;
+
 
     private static final String SQL_CREAR  = "create table "
             + TABLA_TIQUETES + "(" + COLUMNA_ID + " integer primary key autoincrement, "
@@ -189,6 +191,24 @@ public class DBTiquetesDisponibles extends SQLiteOpenHelper {
                 values,
                 " "+COLUMNA_ID_TIQUETE+" = ?",
                 new String[] { String.valueOf( idtiquete ) });
+        db.close();
+
+        return i;
+    }
+
+    public int setFechaEscaneado(int idTiquete){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        fechaEscaneao = DataAccess.getCurrentDate("yyyy-MM-dd hh:mm:ss");//yyyy-MM-dd HH:mm:ss
+        values.put(COLUMNA_FECHA_ESCANEADO, fechaEscaneao);
+
+        int i = -1;
+
+        i = db.update(TABLA_TIQUETES,
+                values,
+                " "+COLUMNA_ID_TIQUETE+" = ?",
+                new String[] { String.valueOf( idTiquete ) });
         db.close();
 
         return i;
