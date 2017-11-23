@@ -10,11 +10,16 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 
@@ -31,9 +36,22 @@ public class MainActivity extends AppCompatActivity
     private Fragment fragment;
     private Menu actionMenu;
     public static Evento evento;
+    private View dialogView;
 
+    public int id_evento; //426806 evento michael Gratis //425960 evento cuco de pago -> para pruebas
+    public static int id_usuario; //michael id es 700009 y cuco id 100298 -> para pruebas
 
     private IntentIntegrator qrScan;
+
+    private EditText et_idUsuario;
+    private EditText et_idEvento;
+    private Button bt_logIn;
+
+    private  Button bt_abrirLogIn;
+
+    private AlertDialog dialog;
+
+
 
     //private MaterialSearchView searchView;
     private SearchView searchView;
@@ -60,10 +78,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         setTitle("");
+        id_evento = 426806;//evento michael
+        id_usuario = 700009;
+
+        //id_evento = 425960;//evento cuco
+        //id_usuario = 100298;
+
 
         appContext = this;
-
-
     }
 
 
@@ -77,6 +99,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -87,6 +111,11 @@ public class MainActivity extends AppCompatActivity
         amiAnunciate = menu.findItem(R.id.ami_anunciate);
         amiBuscar = menu.findItem(R.id.ami_search);
         esconderItemsActionMenu();
+
+        bt_logIn = (Button) findViewById(R.id.bt_abrirLogIn);
+        bt_logIn.setOnClickListener(clickAbrirLogIn());
+
+        abrirLogIn();
 
         //searchView.setMenuItem(amiBuscar);
         //searchView.setCursorDrawable(R.drawable.custom_cursor);
@@ -100,6 +129,71 @@ public class MainActivity extends AppCompatActivity
 
         searchViewEvents();
         return true;
+    }
+
+    public void abrirLogIn(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        dialogView = getLayoutInflater().inflate(R.layout.log_in, null);
+
+        et_idEvento = (EditText) dialogView.findViewById(R.id.et_idEvento);
+        et_idUsuario = (EditText) dialogView.findViewById(R.id.et_idUsuario);
+        bt_logIn = (Button) dialogView.findViewById(R.id.bt_logIn);
+        bt_logIn.setOnClickListener(clickLogIn());
+
+        mBuilder.setView(dialogView);
+        dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    public View.OnClickListener clickLogIn(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int idUsuario = convertirNumero(et_idUsuario.getText().toString().trim());
+                int idEvento = convertirNumero(et_idEvento.getText().toString().trim());
+                if((idEvento+idUsuario)>0) {
+                    dialog.dismiss();
+                    id_usuario = idUsuario;
+                    id_evento = idEvento;
+                    abrirPerfilEvento();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe ingresar solo numeros", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+    }
+
+    public View.OnClickListener clickAbrirLogIn(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirLogIn();
+            }
+        };
+    }
+
+    public int convertirNumero(String hilera){
+        int numero = -1;
+        try{
+            numero = Integer.parseInt(hilera);
+        }catch (NumberFormatException e){
+
+        }
+        return  numero;
+    }
+
+    public void abrirPerfilEvento(){
+        fragment = new PerfilExperiencia();
+        Callable<Void> setEventoPerfilExperiencia = new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                ((PerfilExperiencia)fragment).setEventoPerfil(evento);
+                return null;
+            }
+        };
+        cargarEventoById(id_evento, setEventoPerfilExperiencia);
+        //amiMegaphone.setVisible(true);
+        amiAnunciate.setVisible(true);
     }
 
     public void searchViewEvents(){
@@ -141,21 +235,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        int id_entrada = 426806; //426806 Gratis //425960 de pago -> para pruebas
         fragment = null;
         esconderItemsActionMenu();
         if (id == R.id.nav_perfil) {
-            fragment = new PerfilExperiencia();
-            Callable<Void> setEventoPerfilExperiencia = new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    ((PerfilExperiencia)fragment).setEventoPerfil(evento);
-                    return null;
-                }
-            };
-            cargarEventoById(id_entrada, setEventoPerfilExperiencia);
-            //amiMegaphone.setVisible(true);
-            amiAnunciate.setVisible(true);
+            abrirPerfilEvento();
         } else if (id == R.id.nav_escaner_qr) {
             fragment = new Escanear();
             Callable<Void> setEventoEscanear = new Callable<Void>() {
@@ -165,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 }
             };
-            cargarEventoById(id_entrada, setEventoEscanear);
+            cargarEventoById(id_evento, setEventoEscanear);
             //amiBuscar.setVisible(true);
         }
 
@@ -217,6 +300,10 @@ public class MainActivity extends AppCompatActivity
         if(evento!=null){
             DataAccess da = new DataAccess();
             evento.setTipoTiquetes(da.getTipoTiquetesEvento(id));
+            int[] lvi = da.getLikesClicksImpresionesEvento(id);
+            evento.setImpresiones(lvi[0]);
+            evento.setClicks(lvi[1]);
+            evento.setLikes(lvi[2]);
         }
     }
 

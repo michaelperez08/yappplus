@@ -40,12 +40,41 @@ public class DataAccess {
                 jsb = JsonParser.getJsonResponse(result);
 
                 evento = new Evento(idEvento, "Nombre", "foto", jsb.getInt("todaySales"), jsb.getInt("weekSales"), jsb.getInt("monthSales"), jsb.getInt("totalSales"), jsb.getDouble("todayMoney"),
-                        jsb.getDouble("weekMoney"), jsb.getDouble("monthMoney"), jsb.getDouble("totalMoney"));
+                        jsb.getDouble("weekMoney"), jsb.getDouble("monthMoney"), jsb.getDouble("totalMoney"), jsb.getBoolean("is_free"), "$");
+                if(jsb.getInt("currency")==1){
+                    evento.setMoneda("$");
+                }else{
+                    evento.setMoneda("₡");
+                }
             }
         } catch (JSONException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return evento;
+    }
+
+    public int[] getLikesClicksImpresionesEvento(int idEvento){
+        int[] likesClicksImpresiones = new int[3];
+        String result = "";
+        JSONObject jsb;
+
+        String url = YAPPEXPERIENCE_API_BASE_URL+"get_counters?experience_id="+idEvento;
+        try {
+            result = (String) new HttpRequestTask().execute(url).get();
+            if(result!=null) {
+                jsb = JsonParser.getJsonResponse(result);
+
+                /*evento = new Evento(idEvento, "Nombre", "foto", jsb.getInt("todaySales"), jsb.getInt("weekSales"), jsb.getInt("monthSales"), jsb.getInt("totalSales"), jsb.getDouble("todayMoney"),
+                        jsb.getDouble("weekMoney"), jsb.getDouble("monthMoney"), jsb.getDouble("totalMoney"), jsb.getBoolean("is_free"));*/
+
+                likesClicksImpresiones[0]=(jsb.getInt("printed"));
+                likesClicksImpresiones[1]=(jsb.getInt("clicked"));
+                likesClicksImpresiones[2]=(jsb.getInt("liked"));
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return likesClicksImpresiones;
     }
 
     public static String getCurrentDate(String formato){
@@ -139,39 +168,12 @@ public class DataAccess {
         return listaInfluencers;
     }
 
-    /*public ArrayList<Tiquete> getTiquetesEvento(int idEvento){
-        ArrayList<Tiquete> tiquetes = null;
-        String result = "";
-        JSONArray jsa;
-        JSONObject jsoTemp;
-        String url = BASE_URL+"reporte/filtrar_transacciones_evento_yappplus";
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("id_evento", String.valueOf(idEvento));
-        HttpPostRequestTask hpt = new HttpPostRequestTask();
-        hpt.setMap(map);
-        try {
-            result = (String) hpt.execute(url).get();
-            if(result!=null) {
-                tiquetes = new ArrayList<>();
-                jsa = JsonParser.getJsonArrayFromObject("value", JsonParser.getJsonResponse(result));
-                for(int i=0; i < jsa.length(); i++) {
-                    jsoTemp = jsa.getJSONObject(i);
-                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("nombre_entrada"), jsoTemp.getString("Codigo_QR"),
-                            jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada")));
-                }
-            }
-        }catch (JSONException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return  tiquetes;
-    }*/
-
     public ArrayList<Tiquete> getTiquetesEvento(int idEvento) {
         ArrayList<Tiquete> tiquetes = null;
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
-        String url = YAPPEXPERIENCE_API_BASE_URL + "get_events_tickets_yappplus?id_usuario=700009&id_evento="+idEvento; //su id es 700009 y el mío 100298
+        String url = YAPPEXPERIENCE_API_BASE_URL + "get_events_tickets_yappplus?id_usuario="+MainActivity.id_usuario+"&id_evento="+idEvento;
         try {
             result = (String) new HttpRequestTask().execute(url).get();
             if (result != null) {
@@ -207,38 +209,51 @@ public class DataAccess {
         return enviado;
     }
 
-    public boolean setTiquetesDisponibles(int idEvento, String parametrosUrl, String[] idsTiposTiquetes){
+    public boolean setTiquetesDisponibles(int idEvento, ArrayList<TipoTiquete> lista_temp_tipoTique){
         boolean succces=true;
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
-        String url = "https://yappexperience.com/webserviceplus/modify_tickets_count?experience_id="+idEvento+"&modules_info="+parametrosUrl;
+        String url = "https://yappexperience.com/webserviceplus/modify_tickets_count?experience_id="+idEvento+"&modules_info="+generarParametrosURLPausarVenta(lista_temp_tipoTique);
         try {
             result = (String) new HttpRequestTask().execute(url).get();
             if(result!=null) {
                 jsa = JsonParser.getJsonArrayResponse(result);
+                TipoTiquete temp_tt;
                 for(int i=0; i < jsa.length(); i++) {
                     jsoTemp = jsa.getJSONObject(i);
-                    if(!jsoTemp.getBoolean(idsTiposTiquetes[i])){
+                    temp_tt=lista_temp_tipoTique.get(i);
+                    if(!jsoTemp.getBoolean(String.valueOf(temp_tt.getIdTiquete()))){
                         succces=false;
                     }
                 }
             }
-        } catch (JSONException | InterruptedException | ExecutionException e) {
+        } catch (JSONException | InterruptedException | ExecutionException | ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
         return succces;
     }
 
-    public boolean subirTiuetesEscaneadosAlServidor(String codigo, String fecha){
+    public String generarParametrosURLPausarVenta(ArrayList<TipoTiquete> lista_temp_tipoTique){
+        String parametrosURLPausarVenta = "";
+        for (int i=0; i<lista_temp_tipoTique.size(); i++) {
+            TipoTiquete temp_tipoTiquete = lista_temp_tipoTique.get(i);
+            parametrosURLPausarVenta += temp_tipoTiquete.getIdTiquete()+":"+temp_tipoTiquete.getTiquetesDisponibles()+":"+temp_tipoTiquete.getMensaje()+"|";
+        }
+        parametrosURLPausarVenta = parametrosURLPausarVenta.substring(0,parametrosURLPausarVenta.length()-1);
+        return  parametrosURLPausarVenta;
+    }
+
+    /*public boolean subirTiuetesEscaneadosAlServidor(String codigo, String fecha){
         boolean enviado=false;
         ArrayList<Tiquete> tiquetes = null;
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
+        //fecha = fecha.replace(' ','T');
         String url = "https://yappexperience.com/boleteria_offline/escanear_entrada_offline_yappplus";
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("id_entrada", codigo);
+        map.add("id_evento", codigo);
         map.add("fecha_escaneo", fecha);
         HttpPostRequestTask hpt = new HttpPostRequestTask();
         hpt.setMap(map);
@@ -252,5 +267,28 @@ public class DataAccess {
             e.printStackTrace();
         }
         return enviado;
+    }*/
+
+    public boolean subirTiuetesEscaneadosAlServidor(String codigo, String fecha){
+        boolean enviado=false;
+        ArrayList<Tiquete> tiquetes = null;
+        String result = "";
+        JSONObject jsoTemp;
+        String url = "http://yappdevelopers.com/boleteria_offline/escanear_entrada_offline_yappplus?id_entrada="+codigo+"&fecha_escaneo="+fecha;
+        try {
+            result = (String) new HttpRequestTask().execute(url).get();
+            if(result!=null) {
+                jsoTemp = JsonParser.getJsonResponse(result);
+                enviado = jsoTemp.getInt("resultado") == 1;
+            }
+        } catch (JSONException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return enviado;
     }
+
+    public static double roundDouble(double a){
+        return Math.round(a * 100.0) / 100.0;
+    }
+
 }

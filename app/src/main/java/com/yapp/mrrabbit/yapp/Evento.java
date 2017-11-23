@@ -12,14 +12,17 @@ public class Evento {
 
     private int idEvento;
     private String nombre;
-    private String fotoPerfilURL;
+    private String fotoPerfilURL, moneda;
     private int todaySales, weekSales, monthSales, totalSales;
     private double todayMoney, weekMoney, monthMoney, totalMoney;
     private ArrayList<TipoTiquete> tipoTiquetes;
     private ArrayList<Influencer> influencers;
     private ArrayList<Tiquete> tiquetesEvento;
+    private boolean gratis;
+    private int likes, clicks, impresiones;
 
-    public Evento(int idEvento, String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney) {
+    public Evento(int idEvento, String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney,
+                  boolean gratis, String moneda) {
         this.idEvento = idEvento;
         this.nombre = nombre;
         this.fotoPerfilURL = fotoPerfilURL;
@@ -31,9 +34,12 @@ public class Evento {
         this.weekMoney = weekMoney;
         this.monthMoney = monthMoney;
         this.totalMoney = totalMoney;
+        this.gratis = gratis;
+        this.moneda = moneda;
     }
 
-    public Evento(String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney) {
+    public Evento(String nombre, String fotoPerfilURL, int todaySales, int weekSales, int monthSales, int totalSales, double todayMoney, double weekMoney, double monthMoney, double totalMoney,
+                  boolean gratis, String moneda) {
         this.nombre = nombre;
         this.fotoPerfilURL = fotoPerfilURL;
         this.todaySales = todaySales;
@@ -44,6 +50,8 @@ public class Evento {
         this.weekMoney = weekMoney;
         this.monthMoney = monthMoney;
         this.totalMoney = totalMoney;
+        this.gratis = gratis;
+        this.moneda = moneda;
     }
 
     public Evento() {
@@ -176,5 +184,45 @@ public class Evento {
 
     public void setTiquetesEvento(ArrayList<Tiquete> tiquetesEvento) {
         this.tiquetesEvento = tiquetesEvento;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getClicks() {
+        return clicks;
+    }
+
+    public void setClicks(int clicks) {
+        this.clicks = clicks;
+    }
+
+    public int getImpresiones() {
+        return impresiones;
+    }
+
+    public void setImpresiones(int impresiones) {
+        this.impresiones = impresiones;
+    }
+
+    public String getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(String moneda) {
+        this.moneda = moneda;
+    }
+
+    public boolean isGratis() {
+        return gratis;
+    }
+
+    public void setGratis(boolean gratis) {
+        this.gratis = gratis;
     }
 }

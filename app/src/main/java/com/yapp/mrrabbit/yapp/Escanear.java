@@ -199,15 +199,25 @@ public class Escanear extends Fragment implements View.OnClickListener {
     }
 
     public void cargarCambiosAlServidor(){
+        int cantidadTiquetesActualizar = 0;
+        int cantidadTiquetesActualizados = 0;
         if(tiquetesBDLocal!=null) {
             for (Tiquete tiqueteTemp : tiquetesBDLocal) {
                 if (tiqueteTemp.isCanjeada() && !tiqueteTemp.isSincronizada()) {
                     DataAccess da = new DataAccess();
+                    cantidadTiquetesActualizar++;
                     if(da.subirTiuetesEscaneadosAlServidor(tiqueteTemp.getCodigoQR(), tiqueteTemp.getFechaEscaneo())){
-                        //showToastFromOtherThread("tiquete canjeado subido al servidor");
+                        cantidadTiquetesActualizados++;
                         dbtd.setSincronizado(tiqueteTemp.getIdTiquete());
                     }
                 }
+            }
+            if(cantidadTiquetesActualizar==cantidadTiquetesActualizados && cantidadTiquetesActualizados>0){
+                showToastFromOtherThread("Todos los tiquetes canjeados se han subido al servidir");
+            }else if(cantidadTiquetesActualizar>cantidadTiquetesActualizados && cantidadTiquetesActualizados>0){
+                showToastFromOtherThread("Upss! Algunos tiquetes canjeados no se han subido al servidir, intente de nuevo mas tarde");
+            }else if(cantidadTiquetesActualizar>cantidadTiquetesActualizados && cantidadTiquetesActualizados==0){
+                showToastFromOtherThread("Upss hubo un problema! Los tiquetes canjeados no se han subido al servidir, intente de nuevo mas tarde");
             }
         }
     }
@@ -496,17 +506,6 @@ public class Escanear extends Fragment implements View.OnClickListener {
                 }
             }
         };
-    }
-
-    public void refrescarFragment(){
-        Fragment fragment = new Escanear();
-        ((Escanear)fragment).setEvento(MainActivity.evento);
-        //((Escanear)fragment).setDialogPendiente(true);
-        //((Escanear)fragment).setTiqueteDialogo(tiqueteDialogo);
-        evento = MainActivity.evento;
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        fm.beginTransaction().replace(R.id.main_content, fragment).commit();
-        //((MainActivity)getActivity()).esconderItemsActionMenu();
     }
 
     public void checkEvento(){

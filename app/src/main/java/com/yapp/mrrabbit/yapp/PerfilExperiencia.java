@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,9 +48,11 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private ImageButton ibt_pausar_venta;
     private ImageButton ibt_estadisticas;
     private TextView tv_cerrarDialog;
-    private TextView tv_pausarVenta;
+    private TextView tv_pausarVenta, tv_reporteFinanciero, tv_referidosInfluencers;
+    private ImageView im_dollar_perfil, im_ticket_perfil;
     private TextView tv_ticketes_hoy, tv_ticketes_semana, tv_ticketes_mes, tv_ticketes_total;
     private TextView tv_dinero_hoy, tv_dinero_semana, tv_dinero_mes, tv_dinero_total;
+    private TextView tv_likes, tv_clicks, tv_impresiones;
     private Button bt_accion_dialog;
     private AlertDialog dialog;
     private View dialogView;
@@ -59,9 +62,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private ArrayList<EditText> lista_ed_mensajeEntrada;
     private int sumEntradasDisponibles;
     private String parametrosURLPausarVenta;
-
-    private EditText etEntrada1;
-    private EditText etEntrada2;
 
     private boolean ventaPausada;
 
@@ -77,7 +77,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
     public PerfilExperiencia() {
         // Required empty public constructor
-
     }
 
     /**
@@ -157,7 +156,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 desplegarPopUpPausarVentas();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
                 break;
-
         }
     }
 
@@ -235,6 +233,24 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         t.start();
     }
 
+    public void setTiquetesDisponiblesMensjaesTipoTiquete(){
+        displayDialogLoading();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataAccess da = new DataAccess();
+                if(da.setTiquetesDisponibles(eventoPerfil.getIdEvento(), eventoPerfil.getTipoTiquetes())) {
+                    showToastFromOtherThread("Bloques Actualizados");
+                }else{
+                    showToastFromOtherThread("Algunos bloques no se han actualizado correctamente");
+                }
+                dismissLoading();
+                Thread.currentThread().interrupt();
+            }
+        });
+        t.start();
+    }
+
     public View.OnClickListener enviar_excel(final String url){
         return new View.OnClickListener() {
             @Override
@@ -279,24 +295,75 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        eventoPerfil = MainActivity.evento;
         cargarElemntosVisuales();
-        hayTiquetesDisponibles();
         if(eventoPerfil!=null){
             cargarEventoPerfil();
+        }else{
+            eventoPerfil = MainActivity.evento;
+            cargarEventoPerfil();
+        }
+        definirPausarActivarVenta();
+        cambiosEventoGratuito();
+    }
+
+    public void cambiosEventoGratuito(){
+        if(eventoPerfil.isGratis()) {
+
+            ConstraintLayout layout = (ConstraintLayout) getActivity().findViewById(R.id.cl_fragment_perfil_experiencia);
+            ConstraintSet set = new ConstraintSet();
+
+            set.clone(layout);
+
+            set.removeFromHorizontalChain(im_ticket_perfil.getId());
+            set.removeFromHorizontalChain(tv_ticketes_hoy.getId());
+            set.removeFromHorizontalChain(tv_ticketes_semana.getId());
+            set.removeFromHorizontalChain(tv_ticketes_mes.getId());
+            set.removeFromHorizontalChain(tv_ticketes_total.getId());
+
+            set.connect(im_ticket_perfil.getId(), ConstraintSet.RIGHT, R.id.v_linea_hoy, ConstraintSet.RIGHT);
+
+            set.connect(tv_ticketes_hoy.getId(), ConstraintSet.RIGHT, im_ticket_perfil.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_ticketes_hoy.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
+
+            set.connect(tv_ticketes_semana.getId(), ConstraintSet.RIGHT, tv_ticketes_hoy.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_ticketes_semana.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
+
+            set.connect(tv_ticketes_mes.getId(), ConstraintSet.RIGHT, tv_ticketes_semana.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_ticketes_mes.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
+
+            set.connect(tv_ticketes_total.getId(), ConstraintSet.RIGHT, tv_ticketes_mes.getId(), ConstraintSet.RIGHT);
+            set.connect(tv_ticketes_total.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
+
+            set.applyTo(layout);
+
+            ibt_reporteFinanciero.setVisibility(View.INVISIBLE);
+            ibt_influencers.setVisibility(View.INVISIBLE);
+            tv_referidosInfluencers.setVisibility(View.INVISIBLE);
+            tv_reporteFinanciero.setVisibility(View.INVISIBLE);
+
+            im_dollar_perfil.setVisibility(View.INVISIBLE);
+            tv_dinero_hoy.setVisibility(View.INVISIBLE);
+            tv_dinero_mes.setVisibility(View.INVISIBLE);
+            tv_dinero_semana.setVisibility(View.INVISIBLE);
+            tv_dinero_total.setVisibility(View.INVISIBLE);
+
         }
     }
 
     public void cargarEventoPerfil(){
-        String modena = "$";
+        String modena = eventoPerfil.getMoneda();
         tv_ticketes_hoy.setText(String.valueOf(eventoPerfil.gettodaySales()));
         tv_ticketes_semana.setText(String.valueOf(eventoPerfil.getweekSales()));
         tv_ticketes_mes.setText(String.valueOf(eventoPerfil.getmonthSales()));
         tv_ticketes_total.setText(String.valueOf(eventoPerfil.gettotalSales()));
-        tv_dinero_hoy.setText(modena+String.valueOf(eventoPerfil.gettodayMoney()));
-        tv_dinero_semana.setText(modena+String.valueOf(eventoPerfil.getweekMoney()));
-        tv_dinero_mes.setText(modena+String.valueOf(eventoPerfil.getmonthMoney()));
-        tv_dinero_total.setText(modena+String.valueOf(eventoPerfil.gettotalMoney()));
+        tv_dinero_hoy.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.gettodayMoney())));
+        tv_dinero_semana.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.getweekMoney())));
+        tv_dinero_mes.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.getmonthMoney())));
+        tv_dinero_total.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.gettotalMoney())));
+
+        tv_likes.setText(String.valueOf(eventoPerfil.getLikes()));
+        tv_impresiones.setText(String.valueOf(eventoPerfil.getImpresiones()));
+        tv_clicks.setText(String.valueOf(eventoPerfil.getClicks()));
     }
 
     private void cargarElemntosVisuales() {
@@ -308,6 +375,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         ibt_pausar_venta = (ImageButton) getActivity().findViewById(R.id.ib_pausar_venta);
 
         tv_pausarVenta = (TextView) getActivity().findViewById(R.id.tv_pausarVenta);
+        tv_reporteFinanciero = (TextView) getActivity().findViewById(R.id.tv_reporteFinanciero);
+        tv_referidosInfluencers = (TextView) getActivity().findViewById(R.id.tv_referidosInfluenecers);
+        im_dollar_perfil = (ImageView) getActivity().findViewById(R.id.im_dollar_perfil);
+        im_ticket_perfil = (ImageView) getActivity().findViewById(R.id.im_ticket_perfil);
 
         tv_ticketes_hoy = (TextView) getActivity().findViewById(R.id.tv_tickets_hoy);
         tv_ticketes_semana = (TextView) getActivity().findViewById(R.id.tv_tickets_semana);
@@ -317,6 +388,11 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         tv_dinero_semana = (TextView) getActivity().findViewById(R.id.tv_dollar_semana);
         tv_dinero_mes = (TextView) getActivity().findViewById(R.id.tv_dollar_mes);
         tv_dinero_total = (TextView) getActivity().findViewById(R.id.tv_dollar_total);
+
+        tv_impresiones = (TextView) getActivity().findViewById(R.id.tv_visitas);
+        tv_clicks = (TextView) getActivity().findViewById(R.id.tv_clicks);
+        tv_likes = (TextView) getActivity().findViewById(R.id.tv_likes);
+
 
         bt_escanear.setOnClickListener(this);
         ibt_reporteFinanciero.setOnClickListener(this);
@@ -433,8 +509,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
         TipoTiquete ttTemp = eventoPerfil.getTipoTiquetes().get(0);
 
+        String moneda = eventoPerfil.getMoneda();
+
         ((TextView)dialogView.findViewById(R.id.tv_tipo_entrada_1)).setText(ttTemp.getNombre());
-        ((TextView)dialogView.findViewById(R.id.tv_dinero_tipoentrada_1)).setText("$"+String.valueOf(ttTemp.getDineroSubtotal()));
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_tipoentrada_1)).setText(moneda+String.valueOf(DataAccess.roundDouble(ttTemp.getDineroSubtotal())));
         ((TextView)dialogView.findViewById(R.id.tv_numero_entradas_1)).setText(String.valueOf(ttTemp.getTiquetesVendidos()));
 
         int id_nombre_anterior = R.id.tv_tipo_entrada_1;
@@ -447,6 +525,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         double comision = 0;
         double recibiras = 0;
 
+        float textSizeFinanzas = 11;
 
         for (int i=1; i<size; i++){
             ttTemp = eventoPerfil.getTipoTiquetes().get(i);
@@ -456,6 +535,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_nombre_tiquete.setText(ttTemp.getNombre());
             tv_nombre_tiquete.setGravity(Gravity.CENTER_HORIZONTAL);
             tv_nombre_tiquete.setId(i);
+            tv_nombre_tiquete.setTextSize(textSizeFinanzas);
 
             subtotalEntradas += ttTemp.getTiquetesVendidos();
             TextView tv_cantidad = new TextView(getActivity());
@@ -463,13 +543,15 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_cantidad.setText(String.valueOf(ttTemp.getTiquetesVendidos()));
             tv_cantidad.setGravity(Gravity.CENTER_HORIZONTAL);
             tv_cantidad.setId((size*1)+i);
+            tv_cantidad.setTextSize(textSizeFinanzas);
 
             subtotalDinero += ttTemp.getDineroSubtotal();
             TextView tv_dinero = new TextView(getActivity());
             tv_dinero.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            tv_dinero.setText("$"+String.valueOf(ttTemp.getDineroSubtotal()));
+            tv_dinero.setText(moneda+String.valueOf(DataAccess.roundDouble(ttTemp.getDineroSubtotal())));
             tv_dinero.setGravity(Gravity.CENTER_HORIZONTAL);
             tv_dinero.setId((size*2)+i);
+            tv_dinero.setTextSize(textSizeFinanzas);
 
             View v_inea = new View(getActivity());
             v_inea.setId((size*3)+i);
@@ -510,10 +592,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         comision = subtotalDinero*0.10;
         recibiras = subtotalDinero-comision;
 
-        ((TextView)dialogView.findViewById(R.id.tv_subtotal_numero_entradas)).setText(String.valueOf(subtotalEntradas));
-        ((TextView)dialogView.findViewById(R.id.tv_subtotal_dinero_tipoentrada)).setText(String.valueOf(subtotalDinero));
-        ((TextView)dialogView.findViewById(R.id.tv_dinero_comision)).setText(String.valueOf(comision));
-        ((TextView)dialogView.findViewById(R.id.tv_dinero_recibiras)).setText(String.valueOf(recibiras));
+        ((TextView)dialogView.findViewById(R.id.tv_subtotal_numero_entradas)).setText(moneda+String.valueOf(DataAccess.roundDouble(subtotalEntradas)));
+        ((TextView)dialogView.findViewById(R.id.tv_subtotal_dinero_tipoentrada)).setText(moneda+String.valueOf(DataAccess.roundDouble(subtotalDinero)));
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_comision)).setText(moneda+String.valueOf(DataAccess.roundDouble(comision)));
+        ((TextView)dialogView.findViewById(R.id.tv_dinero_recibiras)).setText(moneda+String.valueOf(DataAccess.roundDouble(recibiras)));
 
         set.connect(R.id.tv_subtotal, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
         set.applyTo(layout);
@@ -523,15 +605,21 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         }
     }
 
+
     public void cargarReporte(){
         ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_reporte);
         ConstraintSet set = new ConstraintSet();
+
+        if(eventoPerfil.isGratis()) {
+            ((TextView) dialogView.findViewById(R.id.tv_ventas)).setText("Inscripciones");
+        }
 
         int id_tipo_entrada_anterior_vendida = R.id.tv_ventas;
         int id_tipo_entrada_anterior_escaneada = R.id.tv_escaneo;
         int size = eventoPerfil.getTipoTiquetes().size();
 
         TipoTiquete tipoTemp = null;
+
         int id = 0;
         for (int i = 0; i < size; i++) {
             tipoTemp = eventoPerfil.getTipoTiquetes().get(i);
@@ -539,7 +627,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             id = i+1;
             TextView tv_tiquete = new TextView(getActivity());
             tv_tiquete.setId(id);
-            tv_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
+            tv_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(190, 120));
             tv_tiquete.setBackgroundResource(R.drawable.radius_border);
             tv_tiquete.setGravity(Gravity.CENTER);
             tv_tiquete.setTextSize(20);
@@ -547,19 +635,23 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_tiquete.setTypeface(null, Typeface.BOLD);
             tv_tiquete.setText(String.valueOf(tipoTemp.getTiquetesVendidos()));
 
+
             TextView tv_dinero_tiquete = new TextView(getActivity());
             tv_dinero_tiquete.setId(size+id);
             tv_dinero_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             tv_dinero_tiquete.setGravity(Gravity.CENTER);
-            tv_dinero_tiquete.setTextSize(15);
+            tv_dinero_tiquete.setTextSize(13);
             tv_dinero_tiquete.setTextColor(Color.parseColor("#FF4081"));
             tv_dinero_tiquete.setTypeface(null, Typeface.BOLD);
-            tv_dinero_tiquete.setText("$"+String.valueOf(tipoTemp.getDineroSubtotal()));
+            tv_dinero_tiquete.setText("$"+String.valueOf(DataAccess.roundDouble(tipoTemp.getDineroSubtotal())));
+            if(eventoPerfil.isGratis()){
+                tv_dinero_tiquete.setVisibility(View.INVISIBLE);
+            }
 
             TextView tv_nombre_tiquete = new TextView(getActivity());
             tv_nombre_tiquete.setId((2*size)+id);
             tv_nombre_tiquete.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            tv_nombre_tiquete.setMaxWidth(130);
+            tv_nombre_tiquete.setMaxWidth(180);
             tv_nombre_tiquete.setGravity(Gravity.CENTER);
             tv_nombre_tiquete.setTextSize(11);
             tv_nombre_tiquete.setText(String.valueOf(tipoTemp.getNombre()));
@@ -568,7 +660,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             //Tiquetes Escaneados
             TextView tv_tiquete_escaneado = new TextView(getActivity());
             tv_tiquete_escaneado.setId((3*size)+id);
-            tv_tiquete_escaneado.setLayoutParams(new ConstraintLayout.LayoutParams(120, 120));
+            tv_tiquete_escaneado.setLayoutParams(new ConstraintLayout.LayoutParams(190, 120));
             tv_tiquete_escaneado.setBackgroundResource(R.drawable.radius_border);
             tv_tiquete_escaneado.setGravity(Gravity.CENTER);
             tv_tiquete_escaneado.setTextSize(20);
@@ -579,7 +671,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             TextView tv_nombre_tiquete_escaneado = new TextView(getActivity());
             tv_nombre_tiquete_escaneado.setId((4*size)+id);
             tv_nombre_tiquete_escaneado.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            tv_nombre_tiquete_escaneado.setMaxWidth(130);
+            tv_nombre_tiquete_escaneado.setMaxWidth(180);
             tv_nombre_tiquete_escaneado.setGravity(Gravity.CENTER);
             tv_nombre_tiquete_escaneado.setTextSize(11);
             tv_nombre_tiquete_escaneado.setText(String.valueOf(tipoTemp.getNombre()));
@@ -592,7 +684,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
             set.clone(layout);
 
-            if(i==0 || i%4==0){
+            if(i==0 || i%3==0){
                 set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.BOTTOM, marginCorrectoTvTiquete(i));
                 set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 20);
                 //set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, tv_tiquete.getId()+1, ConstraintSet.RIGHT);
@@ -600,7 +692,8 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, marginCorrectoTvTiquete(i));
                 set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 20);
                 //set.connect(tv_tiquete_escaneado.getId(), ConstraintSet.RIGHT, tv_tiquete_escaneado.getId()+1, ConstraintSet.RIGHT);
-            }else if((i+1)%4==0){
+
+            }else if((i+1)%3==0){
                 set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.TOP);
                 set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT);
                 set.connect(tv_tiquete.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
@@ -611,6 +704,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
                 set.connect(id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT, tv_tiquete.getId(), ConstraintSet.LEFT);
                 set.connect(id_tipo_entrada_anterior_escaneada, ConstraintSet.RIGHT, tv_tiquete_escaneado.getId(), ConstraintSet.LEFT);
+
             }else{
                 set.connect(tv_tiquete.getId(), ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.TOP);
                 set.connect(tv_tiquete.getId(), ConstraintSet.LEFT, id_tipo_entrada_anterior_vendida, ConstraintSet.RIGHT);
@@ -659,6 +753,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     public void cargarPausarVenta(){
         ConstraintLayout layout = (ConstraintLayout) dialogView.findViewById(R.id.dialog_pausar_venta);
         ConstraintSet set = new ConstraintSet();
+
+        if(eventoPerfil.isGratis()) {
+            ((TextView) dialogView.findViewById(R.id.tv_titulo_dialog_pausar_venta)).setText("Pausar Incripciones");
+        }
 
         int id_view_anterior = R.id.view_pausar_venta;
         int size = eventoPerfil.getTipoTiquetes().size();
@@ -772,7 +870,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     }
 
     public int marginCorrectoTvTiquete(int index){
-        if(index>=4){
+        if(index>=3){
             return 80;
         }else{
             return 20;
@@ -780,12 +878,17 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     }
 
     public void hayTiquetesDisponibles(){
+        String ventaIncripciones = "Venta";
+        if(eventoPerfil.isGratis()){
+            ventaIncripciones = "Incripción";
+        }
+
         if(sumEntradasDisponibles>0){
             ibt_pausar_venta.setImageResource(R.mipmap.ic_pause);
-            tv_pausarVenta.setText("Pausar Venta");
+            tv_pausarVenta.setText("Pausar "+ ventaIncripciones);
         }else{
             ibt_pausar_venta.setImageResource(R.mipmap.ic_play);
-            tv_pausarVenta.setText("Activar Venta");
+            tv_pausarVenta.setText("Activar " + ventaIncripciones );
         }
     }
 
@@ -794,7 +897,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             @Override
             public void onClick(View v) {
                 if(validarFomratoCorrectoEntradasDisponibles()) {
-                    Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+                    setTiquetesDisponiblesMensjaesTipoTiquete();
                     hayTiquetesDisponibles();
                     dialog.dismiss();
                 }else{
@@ -806,14 +909,40 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
 
     public boolean validarFomratoCorrectoEntradasDisponibles(){
         sumEntradasDisponibles = 0;
-        for (EditText et_temp : lista_ed_entradasDisponibles){
-            if(esNumero(et_temp.getText().toString())){
-                sumEntradasDisponibles+=Integer.parseInt(et_temp.getText().toString());
+        EditText et_temp_ed;
+        EditText et_temp_msj;
+        int entradas_disponibles;
+        String mensaje;
+        for (int i=0; i<lista_ed_entradasDisponibles.size(); i++){
+            et_temp_ed = lista_ed_entradasDisponibles.get(i);
+            et_temp_msj = lista_ed_mensajeEntrada.get(i);
+            mensaje = et_temp_msj.getText().toString().trim();
+            if(esNumero(et_temp_ed.getText().toString())){
+                entradas_disponibles = Integer.parseInt(et_temp_ed.getText().toString());
+                sumEntradasDisponibles+=entradas_disponibles;
+                eventoPerfil.getTipoTiquetes().get(i).setTiquetesDisponibles(entradas_disponibles);
             }else{
+                Toast.makeText(getActivity(), "Solo se permiten numeros", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            if(!mensaje.isEmpty()){
+                eventoPerfil.getTipoTiquetes().get(i).setMensaje(mensaje);
+            }else{
+                Toast.makeText(getActivity(), "El mensaje no puede estar vacio", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
         return true;
+    }
+
+    public void definirPausarActivarVenta(){
+        if(eventoPerfil.getTipoTiquetes()!=null) {
+            sumEntradasDisponibles=0;
+            for(TipoTiquete temp_tipoTiquete: eventoPerfil.getTipoTiquetes()){
+                sumEntradasDisponibles+=temp_tipoTiquete.getTiquetesDisponibles();
+            }
+            hayTiquetesDisponibles();
+        }
     }
 
     private View.OnClickListener solicitarAdelanto() {
@@ -834,14 +963,6 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 }
             }
         };
-    }
-
-    public void genrarParametrosURLPausarVenta(int[] cantidades, String[] mensajes){
-        parametrosURLPausarVenta = "";
-        for (int i=0; i<eventoPerfil.getTipoTiquetes().size(); i++) {
-            TipoTiquete temp_tipoTiquete = eventoPerfil.getTipoTiquetes().get(i);
-            parametrosURLPausarVenta += eventoPerfil.getTipoTiquetes().get(i).getIdTiquete()+":"+cantidades[i]+":"+mensajes[i]+"|";
-        }
     }
 
     public void abrirWebView(String url){

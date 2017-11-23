@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 public class HttpRequestTask extends AsyncTask<String, Void, String> {
 
     private String result;
-    private String url;
 
     @Override
     protected String doInBackground(String... params) {
@@ -50,7 +49,6 @@ public class HttpRequestTask extends AsyncTask<String, Void, String> {
 class HttpPostRequestTask extends AsyncTask<String, Void, String> {
 
     private String result;
-    private String url;
     private MultiValueMap<String, String> map;
 
     @Override
