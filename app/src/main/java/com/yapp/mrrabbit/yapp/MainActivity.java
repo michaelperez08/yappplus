@@ -81,8 +81,14 @@ public class MainActivity extends AppCompatActivity
         id_evento = 426806;//evento michael
         id_usuario = 700009;
 
+        //id_evento = 431163;//evento michael 2
+        //id_usuario = 700009;
+
         //id_evento = 425960;//evento cuco
         //id_usuario = 100298;
+
+        //id_evento = 429391;//evento music fest
+        //id_usuario = 700358;
 
 
         appContext = this;

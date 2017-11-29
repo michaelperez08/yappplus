@@ -8,20 +8,21 @@ public class TipoTiquete {
 
     private String nombre, mensaje;
     private int idTiquete;
-    private int tiquetesTotales, tiquetesVendidos, tiquetesDisponibles, tiquetesEscaneados, tiquetesCortesia;
+    private int tiquetesTotales, tiquetesVendidos, tiquetesDisponibles, tiquetesEscaneados, tiquetesCortesiaVenidos, tiquetesCortesiaEscaneados;
     private double dineroSubtotal, dineroComisionYapp, dineroComisionBanco;
     private int porcentageComisionYapp, porcentageComisionBanco;
     private double dineroOrganizador;
+    private boolean cortecia;
 
-    public TipoTiquete(String nombre, int idTiquete, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesia, double dineroSubtotal, double dineroComisionYapp,
-                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje) {
+    public TipoTiquete(String nombre, int idTiquete, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesiaVenidos, double dineroSubtotal, double dineroComisionYapp,
+                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje, int tiquetesCortesiaEscaneados) {
         this.nombre = nombre;
         this.idTiquete = idTiquete;
         this.tiquetesTotales = tiquetesTotales;
         this.tiquetesVendidos = tiquetesVendidos;
         this.tiquetesDisponibles = tiquetesDisponibles;
         this.tiquetesEscaneados = tiquetesEscaneados;
-        this.tiquetesCortesia = tiquetesCortesia;
+        this.tiquetesCortesiaVenidos = tiquetesCortesiaVenidos;
         this.dineroSubtotal = dineroSubtotal;
         this.dineroComisionYapp = dineroComisionYapp;
         this.dineroComisionBanco = dineroComisionBanco;
@@ -29,23 +30,34 @@ public class TipoTiquete {
         this.porcentageComisionBanco = porcentageComisionBanco;
         this.dineroOrganizador = dineroOrganizador;
         this.mensaje = mensaje;
+        this.tiquetesCortesiaEscaneados = tiquetesCortesiaEscaneados;
+        this.cortecia = false;
     }
 
-    public TipoTiquete(String nombre, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesia, double dineroSubtotal, double dineroComisionYapp,
-                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje) {
+    public TipoTiquete(String nombre, int tiquetesTotales, int tiquetesVendidos, int tiquetesDisponibles, int tiquetesEscaneados, int tiquetesCortesiaVenidos, double dineroSubtotal, double dineroComisionYapp,
+                       double dineroComisionBanco, int porcentageComisionYapp, int porcentageComisionBanco, double dineroOrganizador, String mensaje, int tiquetesCortesiaEscaneados) {
         this.nombre = nombre;
         this.tiquetesTotales = tiquetesTotales;
         this.tiquetesVendidos = tiquetesVendidos;
         this.tiquetesDisponibles = tiquetesDisponibles;
         this.tiquetesEscaneados = tiquetesEscaneados;
-        this.tiquetesCortesia = tiquetesCortesia;
+        this.tiquetesCortesiaVenidos = tiquetesCortesiaVenidos;
         this.dineroSubtotal = dineroSubtotal;
         this.dineroComisionYapp = dineroComisionYapp;
         this.dineroComisionBanco = dineroComisionBanco;
         this.porcentageComisionYapp = porcentageComisionYapp;
         this.porcentageComisionBanco = porcentageComisionBanco;
         this.dineroOrganizador = dineroOrganizador;
+        this.tiquetesCortesiaEscaneados = tiquetesCortesiaEscaneados;
         this.mensaje = mensaje;
+    }
+
+    public TipoTiquete(String nombre, int tiquetesVendidos, int tiquetesEscaneados, double dineroSubtotal, boolean cortecia) {
+        this.nombre = nombre;
+        this.tiquetesVendidos = tiquetesVendidos;
+        this.tiquetesEscaneados = tiquetesEscaneados;
+        this.dineroSubtotal = dineroSubtotal;
+        this.cortecia = cortecia;
     }
 
     public String getNombre() {
@@ -88,12 +100,12 @@ public class TipoTiquete {
         this.tiquetesEscaneados = tiquetesEscaneados;
     }
 
-    public int getTiquetesCortesia() {
-        return tiquetesCortesia;
+    public int getTiquetesCortesiaVenidos() {
+        return tiquetesCortesiaVenidos;
     }
 
-    public void setTiquetesCortesia(int tiquetesCortesia) {
-        this.tiquetesCortesia = tiquetesCortesia;
+    public void setTiquetesCortesiaVenidos(int tiquetesCortesiaVenidos) {
+        this.tiquetesCortesiaVenidos = tiquetesCortesiaVenidos;
     }
 
     public double getDineroSubtotal() {
@@ -158,5 +170,21 @@ public class TipoTiquete {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
+    }
+
+    public int getTiquetesCortesiaEscaneados() {
+        return tiquetesCortesiaEscaneados;
+    }
+
+    public void setTiquetesCortesiaEscaneados(int tiquetesCortesiaEscaneados) {
+        this.tiquetesCortesiaEscaneados = tiquetesCortesiaEscaneados;
+    }
+
+    public boolean isCortecia() {
+        return cortecia;
+    }
+
+    public void setCortecia(boolean cortecia) {
+        this.cortecia = cortecia;
     }
 }

@@ -48,7 +48,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private ImageButton ibt_pausar_venta;
     private ImageButton ibt_estadisticas;
     private TextView tv_cerrarDialog;
-    private TextView tv_pausarVenta, tv_reporteFinanciero, tv_referidosInfluencers;
+    private TextView tv_pausarVenta, tv_reporteFinanciero, tv_referidosInfluencers, tv_reporte;
     private ImageView im_dollar_perfil, im_ticket_perfil;
     private TextView tv_ticketes_hoy, tv_ticketes_semana, tv_ticketes_mes, tv_ticketes_total;
     private TextView tv_dinero_hoy, tv_dinero_semana, tv_dinero_mes, tv_dinero_total;
@@ -56,7 +56,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
     private Button bt_accion_dialog;
     private AlertDialog dialog;
     private View dialogView;
-    private boolean excel_enviado;
+    private boolean excel_enviado, corteciaAgregada;
 
     private ArrayList<EditText> lista_ed_entradasDisponibles;
     private ArrayList<EditText> lista_ed_mensajeEntrada;
@@ -132,26 +132,29 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction().replace(R.id.main_content, fragment).commit();
                 ((MainActivity)getActivity()).esconderItemsActionMenu();
-                //((MainActivity)getActivity()).getAmiBuscar().setVisible(true);
                 break;
             case R.id.ib_referidos_influencers:
+            case R.id.tv_referidosInfluenecers:
                 cargarDialogo(R.layout.dialog_influencers, R.id.tv_cerrar_dialog_influencers, R.id.bt_enviar_excel_influencers);
                 getInfluencersPorEvento();
                 excel_enviado = false;
                 bt_accion_dialog.setOnClickListener(enviar_excel("referral_report"));
                 break;
             case R.id.ib_reporte_financiero:
+            case R.id.tv_reporteFinanciero:
                 cargarDialogo(R.layout.dialog_finanzas, R.id.tv_cerrar_dialog_finanzas, R.id.bt_solcitar_adelanto);
                 desplegarPopUpFinanzas();
                 bt_accion_dialog.setOnClickListener(solicitarAdelanto());
                 break;
             case R.id.ib_reporte:
+            case R.id.tv_reporte:
                 cargarDialogo(R.layout.dialog_reporte, R.id.tv_cerrar_dialog_reporte, R.id.bt_enviar_excel_reporte);
                 desplegarPopUpReporte();
                 excel_enviado = false;
                 bt_accion_dialog.setOnClickListener(enviar_excel("send_report"));
                 break;
             case R.id.ib_pausar_venta:
+            case R.id.tv_pausarVenta:
                 cargarDialogo(R.layout.dialog_pausar_venta, R.id.tv_cerrar_dialog_pausar_venta, R.id.bt_guardar_pausar_venta);
                 desplegarPopUpPausarVentas();
                 bt_accion_dialog.setOnClickListener(guardar_pausar_venta("Guardado"));
@@ -164,8 +167,10 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                DataAccess da = new DataAccess();
-                eventoPerfil.setInfluencers(da.getInfluencersEvento(eventoPerfil.getIdEvento()));
+                if(eventoPerfil.getInfluencers()==null) {
+                    DataAccess da = new DataAccess();
+                    eventoPerfil.setInfluencers(da.getInfluencersEvento(eventoPerfil.getIdEvento()));
+                }
                 if(!eventoPerfil.getInfluencers().isEmpty()) {
                     añadirInfluencers();
                     showDialogFromOtherThread();
@@ -315,24 +320,9 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             set.clone(layout);
 
             set.removeFromHorizontalChain(im_ticket_perfil.getId());
-            set.removeFromHorizontalChain(tv_ticketes_hoy.getId());
-            set.removeFromHorizontalChain(tv_ticketes_semana.getId());
-            set.removeFromHorizontalChain(tv_ticketes_mes.getId());
-            set.removeFromHorizontalChain(tv_ticketes_total.getId());
 
             set.connect(im_ticket_perfil.getId(), ConstraintSet.RIGHT, R.id.v_linea_hoy, ConstraintSet.RIGHT);
-
-            set.connect(tv_ticketes_hoy.getId(), ConstraintSet.RIGHT, im_ticket_perfil.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_ticketes_hoy.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
-
-            set.connect(tv_ticketes_semana.getId(), ConstraintSet.RIGHT, tv_ticketes_hoy.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_ticketes_semana.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
-
-            set.connect(tv_ticketes_mes.getId(), ConstraintSet.RIGHT, tv_ticketes_semana.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_ticketes_mes.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
-
-            set.connect(tv_ticketes_total.getId(), ConstraintSet.RIGHT, tv_ticketes_mes.getId(), ConstraintSet.RIGHT);
-            set.connect(tv_ticketes_total.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
+            set.connect(im_ticket_perfil.getId(), ConstraintSet.LEFT, -1, ConstraintSet.RIGHT);
 
             set.applyTo(layout);
 
@@ -361,6 +351,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         tv_dinero_mes.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.getmonthMoney())));
         tv_dinero_total.setText(modena+String.valueOf(DataAccess.roundDouble(eventoPerfil.gettotalMoney())));
 
+
         tv_likes.setText(String.valueOf(eventoPerfil.getLikes()));
         tv_impresiones.setText(String.valueOf(eventoPerfil.getImpresiones()));
         tv_clicks.setText(String.valueOf(eventoPerfil.getClicks()));
@@ -377,6 +368,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         tv_pausarVenta = (TextView) getActivity().findViewById(R.id.tv_pausarVenta);
         tv_reporteFinanciero = (TextView) getActivity().findViewById(R.id.tv_reporteFinanciero);
         tv_referidosInfluencers = (TextView) getActivity().findViewById(R.id.tv_referidosInfluenecers);
+        tv_reporte = (TextView) getActivity().findViewById(R.id.tv_reporte);
         im_dollar_perfil = (ImageView) getActivity().findViewById(R.id.im_dollar_perfil);
         im_ticket_perfil = (ImageView) getActivity().findViewById(R.id.im_ticket_perfil);
 
@@ -399,6 +391,11 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         ibt_influencers.setOnClickListener(this);
         ibt_reporte.setOnClickListener(this);
         ibt_pausar_venta.setOnClickListener(this);
+
+        tv_pausarVenta.setOnClickListener(this);
+        tv_reporteFinanciero.setOnClickListener(this);
+        tv_referidosInfluencers.setOnClickListener(this);
+        tv_reporte.setOnClickListener(this);
     }
 
 
@@ -508,9 +505,14 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         ConstraintSet set = new ConstraintSet();
 
         TipoTiquete ttTemp = eventoPerfil.getTipoTiquetes().get(0);
+        int subtotalEntradas = 0;
+        double subtotalDinero = 0;
+        double comision = 0;
+        double recibiras = 0;
 
         String moneda = eventoPerfil.getMoneda();
-
+        subtotalEntradas += ttTemp.getTiquetesVendidos();
+        subtotalDinero += ttTemp.getDineroSubtotal();
         ((TextView)dialogView.findViewById(R.id.tv_tipo_entrada_1)).setText(ttTemp.getNombre());
         ((TextView)dialogView.findViewById(R.id.tv_dinero_tipoentrada_1)).setText(moneda+String.valueOf(DataAccess.roundDouble(ttTemp.getDineroSubtotal())));
         ((TextView)dialogView.findViewById(R.id.tv_numero_entradas_1)).setText(String.valueOf(ttTemp.getTiquetesVendidos()));
@@ -520,10 +522,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         int id_dinero_anterior = R.id.tv_dinero_tipoentrada_1;
         int size = eventoPerfil.getTipoTiquetes().size();
 
-        int subtotalEntradas = 0;
-        double subtotalDinero = 0;
-        double comision = 0;
-        double recibiras = 0;
+
 
         float textSizeFinanzas = 11;
 
@@ -592,7 +591,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         comision = subtotalDinero*0.10;
         recibiras = subtotalDinero-comision;
 
-        ((TextView)dialogView.findViewById(R.id.tv_subtotal_numero_entradas)).setText(moneda+String.valueOf(DataAccess.roundDouble(subtotalEntradas)));
+        ((TextView)dialogView.findViewById(R.id.tv_subtotal_numero_entradas)).setText(String.valueOf(subtotalEntradas));
         ((TextView)dialogView.findViewById(R.id.tv_subtotal_dinero_tipoentrada)).setText(moneda+String.valueOf(DataAccess.roundDouble(subtotalDinero)));
         ((TextView)dialogView.findViewById(R.id.tv_dinero_comision)).setText(moneda+String.valueOf(DataAccess.roundDouble(comision)));
         ((TextView)dialogView.findViewById(R.id.tv_dinero_recibiras)).setText(moneda+String.valueOf(DataAccess.roundDouble(recibiras)));
@@ -600,7 +599,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         set.connect(R.id.tv_subtotal, ConstraintSet.TOP, id_nombre_anterior, ConstraintSet.BOTTOM, 20);
         set.applyTo(layout);
 
-        if(recibiras<1000){
+        if((eventoPerfil.getMoneda().equals("$") && recibiras<1000) || (eventoPerfil.getMoneda().equals("₡") && recibiras<500000)){
             ((Button)dialogView.findViewById(R.id.bt_solcitar_adelanto)).setVisibility(View.INVISIBLE);
         }
     }
@@ -613,7 +612,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         if(eventoPerfil.isGratis()) {
             ((TextView) dialogView.findViewById(R.id.tv_ventas)).setText("Inscripciones");
         }
-
+        agregarCortesias();
         int id_tipo_entrada_anterior_vendida = R.id.tv_ventas;
         int id_tipo_entrada_anterior_escaneada = R.id.tv_escaneo;
         int size = eventoPerfil.getTipoTiquetes().size();
@@ -643,7 +642,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_dinero_tiquete.setTextSize(13);
             tv_dinero_tiquete.setTextColor(Color.parseColor("#FF4081"));
             tv_dinero_tiquete.setTypeface(null, Typeface.BOLD);
-            tv_dinero_tiquete.setText("$"+String.valueOf(DataAccess.roundDouble(tipoTemp.getDineroSubtotal())));
+            tv_dinero_tiquete.setText(eventoPerfil.getMoneda()+String.valueOf(DataAccess.roundDouble(tipoTemp.getDineroSubtotal())));
             if(eventoPerfil.isGratis()){
                 tv_dinero_tiquete.setVisibility(View.INVISIBLE);
             }
@@ -666,7 +665,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_tiquete_escaneado.setTextSize(20);
             tv_tiquete_escaneado.setTextColor(Color.BLACK);
             tv_tiquete_escaneado.setTypeface(null, Typeface.BOLD);
-            tv_tiquete_escaneado.setText(String.valueOf(i));
+            tv_tiquete_escaneado.setText(String.valueOf(tipoTemp.getTiquetesEscaneados()));
 
             TextView tv_nombre_tiquete_escaneado = new TextView(getActivity());
             tv_nombre_tiquete_escaneado.setId((4*size)+id);
@@ -675,6 +674,12 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             tv_nombre_tiquete_escaneado.setGravity(Gravity.CENTER);
             tv_nombre_tiquete_escaneado.setTextSize(11);
             tv_nombre_tiquete_escaneado.setText(String.valueOf(tipoTemp.getNombre()));
+
+            if(tipoTemp.isCortecia()){
+                tv_dinero_tiquete.setVisibility(View.INVISIBLE);
+                tv_tiquete.setBackgroundResource(R.drawable.radius_border_grey_backgroud);
+                tv_tiquete_escaneado.setBackgroundResource(R.drawable.radius_border_grey_backgroud);
+            }
 
             layout.addView(tv_tiquete);
             layout.addView(tv_dinero_tiquete);
@@ -743,11 +748,32 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
             id_tipo_entrada_anterior_vendida = tv_tiquete.getId();
             id_tipo_entrada_anterior_escaneada = tv_tiquete_escaneado.getId();
         }
+        removerCortesias();
 
         set.connect(R.id.tv_escaneo, ConstraintSet.TOP, id_tipo_entrada_anterior_vendida, ConstraintSet.BOTTOM, 100);
         //set.connect(R.id.tv_escaneo_1, ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, 70);
         set.connect(R.id.bt_enviar_excel_reporte, ConstraintSet.TOP, id_tipo_entrada_anterior_escaneada, ConstraintSet.BOTTOM, 100);
         set.applyTo(layout);
+    }
+
+    public void agregarCortesias(){
+        corteciaAgregada = false;
+        int corteciasVendidas = 0;
+        int corteciasEscaneadas = 0;
+        for(TipoTiquete tt_temp: eventoPerfil.getTipoTiquetes()){
+            corteciasVendidas+=tt_temp.getTiquetesCortesiaVenidos();
+            corteciasEscaneadas+= tt_temp.getTiquetesCortesiaEscaneados();
+        }
+        if(corteciasVendidas>0){//String nombre, int tiquetesVendidos, int tiquetesEscaneados, double dineroSubtotal, boolean cortecia
+            eventoPerfil.getTipoTiquetes().add(new TipoTiquete("Cortesías", corteciasVendidas, corteciasEscaneadas, 0, true));
+            corteciaAgregada = true;
+        }
+    }
+
+    public void removerCortesias(){
+        if(corteciaAgregada){
+            eventoPerfil.getTipoTiquetes().remove(eventoPerfil.getTipoTiquetes().size()-1);
+        }
     }
 
     public void cargarPausarVenta(){
@@ -949,7 +975,7 @@ public class PerfilExperiencia extends Fragment implements View.OnClickListener 
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                abrirWebView("http://yappexperience.com/adelantos");
+                abrirWebView("https://yappexperience.com/adelantos");
             }
         };
     }

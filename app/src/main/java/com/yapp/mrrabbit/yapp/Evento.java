@@ -68,8 +68,8 @@ public class Evento {
 
     public int getTotalTiquetesVendidos(){
         int total = 0;
-        for (TipoTiquete temp_ticket: tipoTiquetes) {
-            total += temp_ticket.getTiquetesVendidos();
+        for (TipoTiquete temp_tipo_ticket: tipoTiquetes) {
+            total += temp_tipo_ticket.getTiquetesVendidos();
         }
         return  total;
     }

@@ -135,7 +135,7 @@ public class DataAccess {
                     jsoTemp = jsa.getJSONObject(i);
                     tipoTiquetes.add(new TipoTiquete(jsoTemp.getString("name"), jsoTemp.getInt("module_id"), jsoTemp.getInt("total_tickets"), jsoTemp.getInt("sold_tickets"), jsoTemp.getInt("available_tickets"),
                             jsoTemp.getInt("scanned_tickets"), jsoTemp.getInt("courtesy_tickets"), jsoTemp.getDouble("subtotal_money"), jsoTemp.getDouble("yapp_commission_money"), jsoTemp.getDouble("bank_commission_money"),
-                            jsoTemp.getInt("yapp_commission_percentage"),jsoTemp.getInt("bank_commission_percentage"),jsoTemp.getDouble("organizer_money"), jsoTemp.getString("sold_out_msj")));
+                            jsoTemp.getInt("yapp_commission_percentage"),jsoTemp.getInt("bank_commission_percentage"),jsoTemp.getDouble("organizer_money"), jsoTemp.getString("sold_out_msj"), jsoTemp.getInt("courtesy_scanned_tickets")));
                 }
 
             }
@@ -173,16 +173,21 @@ public class DataAccess {
         String result = "";
         JSONArray jsa;
         JSONObject jsoTemp;
+        String cedula = "";
         String url = YAPPEXPERIENCE_API_BASE_URL + "get_events_tickets_yappplus?id_usuario="+MainActivity.id_usuario+"&id_evento="+idEvento;
         try {
             result = (String) new HttpRequestTask().execute(url).get();
             if (result != null) {
                 tiquetes = new ArrayList<>();
-                jsa = JsonParser.getJsonArrayFromObject("entradas", JsonParser.getJsonResponse(result));
-                for (int i = 0; i < jsa.length(); i++) {
-                    jsoTemp = jsa.getJSONObject(i);
-                    tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("Nombre_Modulo"), jsoTemp.getString("Codigo_QR"),
-                            jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada"), jsoTemp.getString("Fecha_Escaneo"), jsoTemp.getString("Nombre_Completo_Compra")));
+                jsoTemp = JsonParser.getJsonResponse(result);
+                if(jsoTemp!=null) {
+                    jsa = JsonParser.getJsonArrayFromObject("entradas", jsoTemp);
+                    for (int i = 0; i < jsa.length(); i++) {
+                        jsoTemp = jsa.getJSONObject(i);
+                        cedula = getCedulaDeDescripcion(jsoTemp.getString("Descripcion"));
+                        tiquetes.add(new Tiquete(jsoTemp.getInt("Id_Entrada"), jsoTemp.getInt("Id_Compra"), jsoTemp.getString("Nombre_Modulo"), jsoTemp.getString("Codigo_QR"),
+                                jsoTemp.getBoolean("Canjeada"), jsoTemp.getBoolean("Canjeada"), jsoTemp.getString("Fecha_Escaneo"), jsoTemp.getString("Nombre_Completo_Compra"), cedula));
+                    }
                 }
             }
         } catch (JSONException | InterruptedException | ExecutionException e) {
@@ -190,6 +195,19 @@ public class DataAccess {
         }
         return tiquetes;
     }
+
+    public String getCedulaDeDescripcion(String descripcion){
+        if(!descripcion.isEmpty()){
+            int index = descripcion.lastIndexOf("Número de identificación:");
+            if(index>0) {
+                descripcion = descripcion.substring(index + 25).replace('t', ' ').trim();
+            }else{
+                descripcion = "";
+            }
+        }
+        return descripcion;
+    }
+
 
     public boolean envarExcel(int idEvento, String servicio){
         boolean enviado=false;

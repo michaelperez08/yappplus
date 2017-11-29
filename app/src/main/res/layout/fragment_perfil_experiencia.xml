@@ -161,9 +161,8 @@
             android:layout_width="23dp"
             android:layout_height="23dp"
             android:layout_marginTop="15dp"
-            app:layout_constraintHorizontal_bias="0.651"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/im_dollar_perfil"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView13"
             app:srcCompat="@mipmap/ic_ticket"
             tools:ignore="VectorDrawableCompat" />
@@ -175,10 +174,8 @@
             android:layout_marginTop="20dp"
             android:text="90"
             android:textStyle="bold"
-            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_mes"
             app:layout_constraintRight_toRightOf="@+id/tv_tickets_mes"
-            app:layout_constraintTop_toBottomOf="@+id/tv_tickets_mes"
-            app:layout_constraintHorizontal_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_tickets_mes" />
 
         <TextView
             android:id="@+id/tv_tickets_mes"
@@ -186,7 +183,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="50"
-            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_semana"
             app:layout_constraintRight_toRightOf="@+id/tv_tickets_semana"
             app:layout_constraintTop_toBottomOf="@+id/tv_tickets_semana" />
 
@@ -196,7 +192,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="30"
-            app:layout_constraintLeft_toLeftOf="@+id/tv_tickets_hoy"
             app:layout_constraintRight_toRightOf="@+id/tv_tickets_hoy"
             app:layout_constraintTop_toBottomOf="@+id/tv_tickets_hoy" />
 
@@ -208,13 +203,12 @@
             android:text="10"
             app:layout_constraintRight_toRightOf="@+id/im_ticket_perfil"
             app:layout_constraintTop_toBottomOf="@+id/im_ticket_perfil"
-            app:layout_constraintLeft_toLeftOf="@+id/im_ticket_perfil"
             android:layout_marginRight="0dp" />
 
         <TextView
             android:id="@+id/tv_dollar_total"
             android:layout_width="wrap_content"
-            android:layout_height="17dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="$12000"
             android:textStyle="bold"
@@ -223,11 +217,10 @@
 
         <TextView
             android:id="@+id/tv_dollar_mes"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="19dp"
             android:text="$60"
-            app:layout_constraintLeft_toLeftOf="@+id/tv_dollar_semana"
             app:layout_constraintRight_toRightOf="@+id/tv_dollar_semana"
             app:layout_constraintTop_toBottomOf="@+id/tv_dollar_semana" />
 
@@ -349,9 +342,9 @@
 
         <TextView
             android:id="@+id/tv_referidosInfluenecers"
-            android:layout_width="74dp"
-            android:layout_height="33dp"
-            android:text="Referidos e Influencers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Influencers"
             android:textAlignment="center"
             android:textSize="12dp"
             app:layout_constraintLeft_toLeftOf="@+id/ib_referidos_influencers"
@@ -360,9 +353,9 @@
 
         <TextView
             android:id="@+id/tv_reporteFinanciero"
-            android:layout_width="70dp"
-            android:layout_height="33dp"
-            android:text="Reporte Financiero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finanzas"
             android:textAlignment="center"
             android:textSize="12dp"
             app:layout_constraintLeft_toLeftOf="@+id/ib_reporte_financiero"
@@ -370,7 +363,7 @@
             app:layout_constraintTop_toBottomOf="@+id/ib_reporte_financiero" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tv_reporte"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reporte"
@@ -382,7 +375,7 @@
 
         <TextView
             android:id="@+id/tv_pausarVenta"
-            android:layout_width="85dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Pausar Venta"
             android:textAlignment="center"
